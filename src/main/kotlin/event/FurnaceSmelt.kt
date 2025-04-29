@@ -17,7 +17,8 @@ class FurnaceSmelt : Listener {
 
         if (fishRarityStr != null) {// TODO infinite smelting bug, need to cancel in certain situations where output is already filled
             val fishRarity = FishRarity.valueOf(fishRarityStr)
-            if (fishRarity.props.retainData) {
+            val isShiny = event.source.itemMeta.hasEnchantmentGlintOverride()
+            if (fishRarity.props.retainData || isShiny) {
                 copyFishData(event, fishRarity)
             }
         }

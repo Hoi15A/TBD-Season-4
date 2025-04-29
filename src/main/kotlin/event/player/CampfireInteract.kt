@@ -22,8 +22,9 @@ object CampfireInteract {
         if (!Tag.ITEMS_FISHES.isTagged(item.type)) return
 
         val fishRarityStr = item.persistentDataContainer.get(FISH_RARITY, PersistentDataType.STRING) ?: return
+        val isShiny = item.itemMeta.hasEnchantmentGlintOverride()
         val fishRarity = FishRarity.valueOf(fishRarityStr)
-        if (fishRarity.props.retainData) {
+        if (fishRarity.props.retainData || isShiny) {
             event.isCancelled = true
             val player = event.player
             val block = event.clickedBlock!!
