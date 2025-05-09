@@ -52,7 +52,19 @@ enum class FishRarity(val weight: Double, val itemRarity: ItemRarity, val props:
         sendGlobalMsg = true,
         sendGlobalTitle = true,
         showCatcher = true,
-        retainData = true));
+        retainData = true)),
+    TRANSCENDENT(0.0002, ItemRarity.TRANSCENDENT, RarityProperties(
+        sendGlobalMsg = true,
+        sendGlobalTitle = true,
+        showCatcher = true,
+        retainData = true
+    )),
+    CELESTIAL(0.0001, ItemRarity.CELESTIAL, RarityProperties(
+        sendGlobalMsg = true,
+        sendGlobalTitle = true,
+        showCatcher = true,
+        retainData = true
+    ));
 
     companion object {
         fun getRandomRarity(): FishRarity {

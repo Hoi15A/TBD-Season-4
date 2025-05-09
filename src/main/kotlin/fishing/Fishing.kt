@@ -122,7 +122,6 @@ object Fishing {
                     false
                 )
             }
-
             FishRarity.EPIC -> {
                 catcher.playSound(Sounds.EPIC_CATCH)
                 firework(
@@ -135,7 +134,6 @@ object Fishing {
                 )
                 epicEffect(location)
             }
-
             FishRarity.LEGENDARY -> {
                 Bukkit.getServer().playSound(Sounds.LEGENDARY_CATCH)
                 for (i in 0..2) {
@@ -154,7 +152,6 @@ object Fishing {
                 }
                 legendaryEffect(location)
             }
-
             FishRarity.MYTHIC -> {
                 Bukkit.getServer().playSound(Sounds.MYTHIC_CATCH)
                 for (i in 0..15) {
@@ -186,7 +183,6 @@ object Fishing {
                     }.runTaskLater(plugin, (i * 3L) + 30L)
                 }
             }
-
             FishRarity.UNREAL -> {
                 val server = Bukkit.getServer()
                 server.playSound(Sounds.UNREAL_CATCH)
@@ -250,9 +246,13 @@ object Fishing {
                     }.runTaskLater(plugin, i * 15L)
                 }
             }
+            FishRarity.TRANSCENDENT -> {
 
-            else -> { /* do nothing */
             }
+            FishRarity.CELESTIAL -> {
+
+            }
+            else -> { /* do nothing */ }
         }
     }
 
