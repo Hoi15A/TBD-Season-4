@@ -25,7 +25,7 @@ class PlayerInteract : Listener {
 
     @EventHandler
     fun onPlayerInteract(event: PlayerInteractEntityEvent) {
-        if (!event.hand.equals(org.bukkit.inventory.EquipmentSlot.HAND)) { // The reason for this is really funny
+        if (event.hand.equals(org.bukkit.inventory.EquipmentSlot.HAND)) { // The reason for this is really funny
             itemframeInteractEvent(event)
         }
     }
