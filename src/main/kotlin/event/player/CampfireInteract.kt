@@ -1,7 +1,7 @@
 package event.player
 
 import fishing.FishRarity
-import lib.Sounds.CAMPFIRE_DISALLOW_FISH_COOK
+import util.Sounds.CAMPFIRE_DISALLOW_FISH_COOK
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material

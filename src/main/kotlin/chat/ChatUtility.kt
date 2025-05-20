@@ -4,7 +4,7 @@ import plugin
 import chat.Formatting.allTags
 import chat.Formatting.restrictedTags
 import util.Noxesium
-import lib.Sounds
+import util.Sounds
 
 import io.papermc.paper.chat.ChatRenderer
 
@@ -72,7 +72,7 @@ object GlobalRenderer : ChatRenderer {
         val playerHead = Noxesium.buildSkullComponent(source.uniqueId, false, 0, 0, 1.0f)
         val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
         return playerHead
-            .append(allTags.deserialize("<tbdcolour>${source.name}<reset>: ")
+            .append(allTags.deserialize("<tbdcolour>${if(source.name == "Byrtrum") "<obfuscated>${source.name}" else source.name}<reset>: ")
                 .append(if(source.hasPermission("tbd.group.admin")) allTags.deserialize(plainMessage) else restrictedTags.deserialize(plainMessage)))
     }
 }

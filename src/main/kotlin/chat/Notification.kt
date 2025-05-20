@@ -1,7 +1,7 @@
 package chat
 
 import chat.Formatting.allTags
-import lib.Sounds
+import util.Sounds
 import logger
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.sound.Sound

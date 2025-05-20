@@ -6,7 +6,7 @@ import plugin
 import item.ItemRarity
 import item.ItemType
 import item.SubRarity
-import lib.Sounds
+import util.Sounds
 import logger
 
 import net.kyori.adventure.text.format.TextDecoration
@@ -496,7 +496,7 @@ object Fishing {
         }.runTaskTimer(plugin, 0L, 1L)
     }
 
-    private fun shinyEffect(item: Item) {
+    fun shinyEffect(item: Item) {
         Bukkit.getServer().playSound(Sounds.SHINY_CATCH)
         object : BukkitRunnable() {
             var i = 0
@@ -508,7 +508,7 @@ object Fishing {
                         10, 0.25, 0.25, 0.25, 0.0
                     )
                 }
-                if(i >= 40 || item.isDead) {
+                if(i >= 100 || item.isDead) {
                     cancel()
                 }
                 i++
@@ -516,7 +516,7 @@ object Fishing {
         }.runTaskTimer(plugin, 0L, 5L)
     }
 
-    private fun firework(
+    fun firework(
         location: Location,
         flicker: Boolean,
         trail: Boolean,
@@ -528,7 +528,7 @@ object Fishing {
             Location(location.world, location.x, location.y + 1.0, location.z),
             Firework::class.java
         )
-        f.addScoreboardTag("tbd.fishing.firework")
+        f.addScoreboardTag("tbd.firework")
         val fm = f.fireworkMeta
         fm.addEffect(
             FireworkEffect.builder()
