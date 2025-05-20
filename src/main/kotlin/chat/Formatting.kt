@@ -50,7 +50,24 @@ object Formatting {
                 .resolver(StandardTags.reset())
                 .resolver(StandardTags.rainbow())
                 .resolver(StandardTags.pride())
+                .resolver(StandardTags.gradient())
+                .resolver(StandardTags.shadowColor())
                 .resolver(Noxesium.skullResolver())
+                .resolver(TBD_COLOUR)
+                .build()
+        )
+        .build()
+
+    val restrictedNoSkullTags = MiniMessage.builder()
+        .tags(
+            TagResolver.builder()
+                .resolver(StandardTags.color())
+                .resolver(StandardTags.decorations())
+                .resolver(StandardTags.reset())
+                .resolver(StandardTags.rainbow())
+                .resolver(StandardTags.pride())
+                .resolver(StandardTags.gradient())
+                .resolver(StandardTags.shadowColor())
                 .resolver(TBD_COLOUR)
                 .build()
         )
@@ -65,4 +82,9 @@ object Formatting {
             )
         }
     }
+
+    val DIVINE_DEATH_MESSAGES = listOf(
+        "%s's existence was repurposed",
+        "%s had their existence forfeit"
+    )
 }

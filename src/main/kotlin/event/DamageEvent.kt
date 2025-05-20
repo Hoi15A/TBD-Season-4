@@ -9,7 +9,7 @@ class DamageEvent: Listener {
     @EventHandler
     private fun onFishingFireworkDamage(e: EntityDamageByEntityEvent) {
         if(e.damager is Firework) {
-            if(e.damager.scoreboardTags.contains("tbd.fishing.firework")) {
+            if(e.damager.scoreboardTags.contains("tbd.firework")) {
                 e.isCancelled = true
             }
         }

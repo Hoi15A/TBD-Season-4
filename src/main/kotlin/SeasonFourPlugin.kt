@@ -31,6 +31,7 @@ class SeasonFourPlugin : JavaPlugin() {
 
     override fun onDisable() {
         this.logger.info("It is so over.")
+        Bukkit.getServer().scoreboardManager.mainScoreboard.teams.forEach { team -> if(team.name.contains("tbd.true_eye.")) team.unregister() }
         VisualChat.clearChatEntities()
     }
 
@@ -42,8 +43,10 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(ChatEvent(), this)
         server.pluginManager.registerEvents(FurnaceSmelt(), this)
         server.pluginManager.registerEvents(PlayerInteract(), this)
+        server.pluginManager.registerEvents(PlayerInteractEntity(), this)
         server.pluginManager.registerEvents(DeathEvent(), this)
         server.pluginManager.registerEvents(DamageEvent(), this)
+        server.pluginManager.registerEvents(EnderEyeInteract(), this)
     }
 
     private fun registerCommands() {

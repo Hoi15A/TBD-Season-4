@@ -15,6 +15,12 @@ object Sounds {
     val CELESTIAL_CATCH = Sound.sound(Key.key("item.totem.use"), Sound.Source.VOICE, 2f, 0.75f)
     val SHINY_CATCH = Sound.sound(Key.key("block.amethyst_cluster.step"), Sound.Source.VOICE, 2f, 2f)
     val CAMPFIRE_DISALLOW_FISH_COOK = Sound.sound(Key.key("block.fire.extinguish"), Sound.Source.BLOCK, 1f, 0f)
+    val ENDER_EYE_PLACE_FAIL = Sound.sound(Key.key("block.end_portal_frame.fill"), Sound.Source.BLOCK, 2f, 0.5f)
+    val ENDER_EYE_PLACE_FAIL_BACKGROUND = Sound.sound(Key.key("entity.lightning_bolt.thunder"), Sound.Source.BLOCK, 1f, 2f)
+    val TRUE_EYE_SPAWN = Sound.sound(Key.key("block.end_portal.spawn"), Sound.Source.MASTER, 1f, 0.75f)
     val ADMIN_MESSAGE = Sound.sound(Key.key("ui.button.click"), Sound.Source.MASTER, 0.5f, 2f)
     val SERVER_ANNOUNCEMENT = Sound.sound(Key.key("block.note_block.pling"), Sound.Source.MASTER, 1f, 1f)
+    val RENAME_ITEM = Sound.sound(Key.key("block.smithing_table.use"), Sound.Source.PLAYER, 1f, 1f)
+    val FRAME_EYE_BREAK = Sound.sound(Key.key("entity.ender_eye.death"), Sound.Source.BLOCK, 1f, 0.75f)
+
 }

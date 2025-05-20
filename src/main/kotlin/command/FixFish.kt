@@ -1,6 +1,7 @@
 package command
 
 import chat.Formatting
+import fishing.FishRarity
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import item.SubRarity.SHINY
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText
@@ -17,7 +18,7 @@ import util.Keys.FISH_RARITY
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class FixFish {
-    @Command("fix-fish")
+    @Command("fixfish")
     @Permission("tbd.command.fixfish")
     fun fixFish(css: CommandSourceStack) {
         val player = css.sender as Player
@@ -27,6 +28,9 @@ class FixFish {
         if (!isFish || itemStack.isEmpty) {
             player.sendMessage(Formatting.allTags.deserialize("<red>You are not holding a fish. For eel? On cod? No carp?</red>"))
         } else {
+            val rarityFixApplied = fixMissingRarityPDC(itemStack)
+            player.sendMessage(Formatting.allTags.deserialize("Rarity fix applied: <blue>$rarityFixApplied</blue>"))
+
             val fishRarityStr = itemStack.persistentDataContainer.get(FISH_RARITY, PersistentDataType.STRING)
             val isShiny = itemStack.persistentDataContainer.get(FISH_IS_SHINY, PersistentDataType.BOOLEAN)
             if (fishRarityStr == null) {
@@ -51,6 +55,27 @@ class FixFish {
                 """.trimIndent()
             )
         )
+    }
+
+    /**
+     * @return if fix applied
+     */
+    private fun fixMissingRarityPDC(itemStack: ItemStack): Boolean {
+        val fishRarityStr = itemStack.persistentDataContainer.get(FISH_RARITY, PersistentDataType.STRING)
+        if (fishRarityStr != null) return false
+
+        val fishMeta = itemStack.itemMeta
+        val serializedLore = plainText().serialize(fishMeta.lore()!!.first())
+
+        val rarity = FishRarity.entries.find { serializedLore.contains(it.itemRarity.rarityGlyph) }
+
+        if (rarity != null) {
+            fishMeta.persistentDataContainer.set(FISH_RARITY, PersistentDataType.STRING, rarity.name)
+            itemStack.setItemMeta(fishMeta)
+            return true
+        } else {
+            return false
+        }
     }
 
     /**

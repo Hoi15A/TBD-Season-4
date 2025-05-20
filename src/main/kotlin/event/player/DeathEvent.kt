@@ -23,7 +23,7 @@ class DeathEvent: Listener {
         val newArgs = mutableListOf<TranslationArgument>()
         component.arguments().forEach {
             val str = plainText().serialize(it.asComponent())
-            if ((str == e.player.name && e.player.isInvisible) || (str == e.player.killer?.name && e.player.killer?.isInvisible == true)) {
+            if ((str == e.player.name && (e.player.isInvisible || e.player.name == "Byrtrum")) || (str == e.player.killer?.name && (e.player.killer?.isInvisible == true || e.player.killer?.name == "Byrtrum"))) {
                 newArgs.add(TranslationArgument.component(
                     Formatting.allTags.deserialize(
                         "<hover:show_text:'Made you look.'><obfuscated>${"*".repeat(Random.nextInt(4, 16))}</obfuscated></hover>"
@@ -33,7 +33,10 @@ class DeathEvent: Listener {
                 newArgs.add(it)
             }
         }
-
+        if(e.player.killer?.name == "Byrtrum") {
+            e.deathMessage(Formatting.allTags.deserialize(Formatting.DIVINE_DEATH_MESSAGES.random().replace("%s", e.player.name)))
+            return
+        }
         val newComponent = component.arguments(newArgs)
         e.deathMessage(newComponent)
     }

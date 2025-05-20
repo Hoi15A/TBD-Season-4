@@ -27,6 +27,7 @@ class FurnaceSmelt : Listener {
 
     private fun copyFishData(event: FurnaceSmeltEvent, fishRarity: FishRarity) {
         val resultMeta = event.result.itemMeta
+        event.source.persistentDataContainer.copyTo(resultMeta.persistentDataContainer, true)
         resultMeta.displayName(
             event.result.effectiveName().color(TextColor.fromHexString(fishRarity.itemRarity.colourHex))
                 .decoration(TextDecoration.ITALIC, false)
