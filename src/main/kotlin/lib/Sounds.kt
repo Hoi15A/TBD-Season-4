@@ -11,6 +11,8 @@ object Sounds {
     val UNREAL_CATCH = Sound.sound(Key.key("ambient.cave"), Sound.Source.VOICE, 10f, 2f)
     val UNREAL_CATCH_SPAWN = Sound.sound(Key.key("entity.warden.sonic_boom"), Sound.Source.VOICE, 2f, 2f)
     val UNREAL_CATCH_SPAWN_BATS = Sound.sound(Key.key("entity.warden.death"), Sound.Source.VOICE, 2f, 1f)
+    val TRANSCENDENT_CATCH = Sound.sound(Key.key("entity.blaze.ambient"), Sound.Source.VOICE, 2f, 0.75f)
+    val CELESTIAL_CATCH =Sound.sound(Key.key("item.totem.use"), Sound.Source.VOICE, 2f, 0.75f)
     val SHINY_CATCH = Sound.sound(Key.key("block.amethyst_cluster.step"), Sound.Source.VOICE, 2f, 2f)
     val CAMPFIRE_DISALLOW_FISH_COOK = Sound.sound(Key.key("block.fire.extinguish"), Sound.Source.BLOCK, 1f, 0f)
     val ADMIN_MESSAGE = Sound.sound(Key.key("ui.button.click"), Sound.Source.MASTER, 0.5f, 2f)

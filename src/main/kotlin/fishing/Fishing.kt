@@ -17,6 +17,8 @@ import org.bukkit.entity.*
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import util.Keys.FISH_IS_OBFUSCATED
+import util.Keys.FISH_IS_SHADOW
 import util.Keys.FISH_IS_SHINY
 import util.startsWithVowel
 
@@ -26,6 +28,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 object Fishing {
@@ -34,17 +37,16 @@ object Fishing {
         item: Item,
         location: Location,
         forcedFishRarity: FishRarity?,
-        forcedFishShiny: Boolean?
+        forcedFishSubRarity: SubRarity?
     ) {
         val fishRarity = forcedFishRarity ?: FishRarity.getRandomRarity()
-        val isShiny = forcedFishShiny ?: SubRarity.isShiny()
+        val subRarity = forcedFishSubRarity ?: SubRarity.getRandomSubRarity()
 
         val caughtByLore =
-            if (fishRarity.props.showCatcher || isShiny) allTags.deserialize("<reset><white>Caught by <yellow>${player.name}<white>.")
-                .decoration(TextDecoration.ITALIC, false) else null
+            if (fishRarity.props.showCatcher || subRarity != SubRarity.NULL) allTags.deserialize("<reset><white>Caught by <yellow>${player.name}<white>.").decoration(TextDecoration.ITALIC, false) else null
         val fishMeta = item.itemStack.itemMeta
         fishMeta.displayName(
-            allTags.deserialize("<${fishRarity.itemRarity.colourHex}>${item.name}").decoration(TextDecoration.ITALIC, false)
+            allTags.deserialize("<${fishRarity.itemRarity.colourHex}>${if(subRarity == SubRarity.OBFUSCATED) "<font:alt>" else ""}${item.name}").decoration(TextDecoration.ITALIC, false)
         )
         fishMeta.lore(
             if (caughtByLore == null) {
@@ -54,14 +56,23 @@ object Fishing {
                 )
             } else {
                 listOf(
-                    allTags.deserialize("<reset><white>${fishRarity.itemRarity.rarityGlyph}${if (isShiny) "<reset><white>${SubRarity.SHINY.subRarityGlyph}${ItemType.FISH.typeGlyph}" else "<reset><white>${ItemType.FISH.typeGlyph}"}")
+                    allTags.deserialize("<reset><white>${fishRarity.itemRarity.rarityGlyph}${if (subRarity != SubRarity.NULL) "<reset><white>${subRarity.subRarityGlyph}${ItemType.FISH.typeGlyph}" else "<reset><white>${ItemType.FISH.typeGlyph}"}")
                         .decoration(TextDecoration.ITALIC, false), caughtByLore
                 )
             }
         )
-        if (isShiny) {
-            fishMeta.setEnchantmentGlintOverride(true)
-            fishMeta.persistentDataContainer.set(FISH_IS_SHINY, PersistentDataType.BOOLEAN, true)
+        when(subRarity) {
+            SubRarity.NULL -> {}
+            SubRarity.SHINY -> {
+                fishMeta.setEnchantmentGlintOverride(true)
+                fishMeta.persistentDataContainer.set(FISH_IS_SHINY, PersistentDataType.BOOLEAN, true)
+            }
+            SubRarity.SHADOW -> {
+                fishMeta.persistentDataContainer.set(FISH_IS_SHADOW, PersistentDataType.BOOLEAN, true)
+            }
+            SubRarity.OBFUSCATED -> {
+                fishMeta.persistentDataContainer.set(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN, true)
+            }
         }
         fishMeta.persistentDataContainer.set(FISH_RARITY, PersistentDataType.STRING, fishRarity.name)
         item.itemStack.setItemMeta(fishMeta)
@@ -75,7 +86,8 @@ object Fishing {
         if (fishRarity.props.sendGlobalTitle) catchTitle(player, item, fishRarity)
         if (fishRarity.props.isAnimated) catchAnimation(player, item, location.add(0.0, 1.75, 0.0), fishRarity)
         if (fishRarity in listOf(FishRarity.LEGENDARY, FishRarity.MYTHIC, FishRarity.UNREAL)) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
-        if (isShiny) shinyEffect(item)
+        if (subRarity != SubRarity.NULL) logger.info("(FISHING) ${player.name} caught $subRarity ${item.name}.")
+        if (subRarity == SubRarity.SHINY) shinyEffect(item)
     }
 
     private fun catchText(catcher: Player, item: Item, fishRarity: FishRarity) {
@@ -247,12 +259,123 @@ object Fishing {
                 }
             }
             FishRarity.TRANSCENDENT -> {
+                Bukkit.getServer().playSound(Sounds.TRANSCENDENT_CATCH)
+                object : BukkitRunnable() {
+                    val radius = 5.0
+                    val vertices = generateVertices(radius)
+                    val edges = getEdges()
+                    var angle = 0.0
+                    var time = 0
+                    override fun run() {
+                        if (time++ >= 300) cancel()
+                        val rotated = vertices.map { rotateY(it, angle) }
+                        rotated.forEach { point ->
+                            location.world.spawnParticle(
+                                Particle.DUST,
+                                location.clone().add(point),
+                                0,
+                                Particle.DustOptions(Color.RED, 1.5f)
+                            )
+                        }
+                        edges.forEach { (i, j) ->
+                            drawEdge(location, rotated[i], rotated[j], 8, Color.RED)
+                        }
+                        angle += Math.toRadians(4.0)
+                    }
 
+
+                }.runTaskTimer(plugin, 0L, 2L)
             }
             FishRarity.CELESTIAL -> {
-
+                Bukkit.getServer().playSound(Sounds.CELESTIAL_CATCH)
+                firework(location, flicker = true, trail = true, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL_LARGE, variedVelocity = false)
+                val radius = 12.0
+                val step = Math.PI / 16
+                for (angle in 0 until 12) {
+                    val x = radius * cos(angle * step)
+                    val z = radius * sin(angle * step)
+                    location.world.strikeLightningEffect(location.clone().add(x, 100.0, z))
+                    location.world.spawnParticle(
+                        Particle.FLASH,
+                        location.clone().add(x, 100.0, z),
+                        5, 0.0, 0.0, 0.0, 0.0, null, true
+                    )
+                    location.world.spawnParticle(
+                        Particle.CLOUD,
+                        location.clone().add(x, 100.0, z),
+                        10, 0.0, 0.0, 0.0, 0.5, null, true
+                    )
+                }
+                for(i in 0..39) {
+                    object : BukkitRunnable() {
+                        override fun run() {
+                            val randomX = Random.nextDouble(location.x - 20.0, location.x + 20.0)
+                            val randomZ = Random.nextDouble(location.z - 20.0, location.z + 20.0)
+                            var height = location.blockY + 100
+                            object : BukkitRunnable() {
+                                override fun run() {
+                                    if(height > location.blockY) {
+                                        firework(Location(location.world, randomX, height.toDouble(), randomZ), flicker = false, trail = false, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL, variedVelocity = false)
+                                        height -= 2
+                                    } else {
+                                        location.world.playSound(Location(location.world, randomX, height.toDouble(), randomZ), "item.totem.use", 0.75f, 0.75f)
+                                        location.world.spawnParticle(
+                                            Particle.TOTEM_OF_UNDYING,
+                                            Location(location.world, randomX, height.toDouble(), randomZ),
+                                            250, 0.0, 0.0, 0.0, 0.75, null, true
+                                        )
+                                        cancel()
+                                    }
+                                }
+                            }.runTaskTimer(plugin, 0L, 4L)
+                        }
+                    }.runTaskLater(plugin, 0L + (i.toLong() * 15))
+                }
             }
             else -> { /* do nothing */ }
+        }
+    }
+
+    // TRANSCENDENT DODECAHEDRON METHODS
+    fun generateVertices(r: Double): List<Vector> {
+        val phi = (1 + sqrt(5.0)) / 2
+        val a = 1.0 / sqrt(3.0)
+        val b = a / phi
+        val c = a * phi
+
+        return listOf(
+            Vector( a,  a,  a), Vector( a,  a, -a), Vector( a, -a,  a), Vector( a, -a, -a),
+            Vector(-a,  a,  a), Vector(-a,  a, -a), Vector(-a, -a,  a), Vector(-a, -a, -a),
+            Vector( 0.0,  b,  c), Vector( 0.0,  b, -c), Vector( 0.0, -b,  c), Vector( 0.0, -b, -c),
+            Vector( b,  c, 0.0), Vector( b, -c, 0.0), Vector(-b,  c, 0.0), Vector(-b, -c, 0.0),
+            Vector( c, 0.0,  b), Vector( c, 0.0, -b), Vector(-c, 0.0,  b), Vector(-c, 0.0, -b)
+        ).map { it.multiply(r) }
+    }
+
+    fun getEdges(): List<Pair<Int, Int>> = listOf(
+        0 to 8, 0 to 12, 0 to 16, 1 to 9, 1 to 12, 1 to 17, 2 to 10, 2 to 13, 2 to 16,
+        3 to 11, 3 to 13, 3 to 17, 4 to 8, 4 to 14, 4 to 18, 5 to 9, 5 to 14, 5 to 19,
+        6 to 10, 6 to 15, 6 to 18, 7 to 11, 7 to 15, 7 to 19, 8 to 10, 9 to 11,
+        12 to 14, 13 to 15, 16 to 17, 18 to 19
+    )
+
+    fun rotateY(v: Vector, angle: Double): Vector {
+        val cos = cos(angle)
+        val sin = sin(angle)
+        return Vector(v.x * cos - v.z * sin, v.y, v.x * sin + v.z * cos)
+    }
+
+    fun drawEdge(origin: Location, start: Vector, end: Vector, steps: Int, color: Color) {
+        val delta = end.clone().subtract(start).multiply(1.0 / steps)
+        val world = origin.world
+        for (i in 0..steps) {
+            val point = start.clone().add(delta.clone().multiply(i))
+            world.spawnParticle(
+                Particle.DUST,
+                origin.clone().add(point),
+                0,
+                Particle.DustOptions(color, 1.0f)
+            )
         }
     }
 
@@ -427,7 +550,7 @@ object Fishing {
         } else {
             fm.power = 0
             f.fireworkMeta = fm
-            f.ticksToDetonate = 1
+            f.ticksToDetonate = 0
         }
     }
 }

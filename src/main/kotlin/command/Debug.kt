@@ -4,6 +4,7 @@ import fishing.FishRarity
 import fishing.Fishing
 
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import item.SubRarity
 
 import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
@@ -22,9 +23,9 @@ import plugin
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class Debug {
-    @Command("debug catch <rarity> <shiny>")
+    @Command("debug catch <rarity> <subrarity>")
     @Permission("tbd.command.debug")
-    fun debug(css: CommandSourceStack, @Argument("rarity") rarity: FishRarity, @Argument("shiny") shiny: Boolean) {
+    fun debug(css: CommandSourceStack, @Argument("rarity") rarity: FishRarity, @Argument("subrarity") subrarity: SubRarity) {
         if(css.sender is Player) {
             val player = css.sender as Player
             if(player.gameMode == GameMode.CREATIVE) {
@@ -34,7 +35,7 @@ class Debug {
                     override fun run() {
                         val item = loc.world.spawn(loc, Item::class.java)
                         item.itemStack = ItemStack(Material.BEEF, 1)
-                        Fishing.catchFish(player, item, item.location, rarity, shiny)
+                        Fishing.catchFish(player, item, item.location, rarity, subrarity)
                     }
                 }.runTaskLater(plugin, 100L)
             }

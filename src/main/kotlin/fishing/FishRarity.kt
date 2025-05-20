@@ -54,12 +54,14 @@ enum class FishRarity(val weight: Double, val itemRarity: ItemRarity, val props:
         showCatcher = true,
         retainData = true)),
     TRANSCENDENT(0.0002, ItemRarity.TRANSCENDENT, RarityProperties(
+        isAnimated = true,
         sendGlobalMsg = true,
         sendGlobalTitle = true,
         showCatcher = true,
         retainData = true
     )),
     CELESTIAL(0.0001, ItemRarity.CELESTIAL, RarityProperties(
+        isAnimated = true,
         sendGlobalMsg = true,
         sendGlobalTitle = true,
         showCatcher = true,
