@@ -14,6 +14,8 @@ object Sounds {
     val TRANSCENDENT_CATCH = Sound.sound(Key.key("entity.blaze.ambient"), Sound.Source.VOICE, 2f, 0.75f)
     val CELESTIAL_CATCH = Sound.sound(Key.key("item.totem.use"), Sound.Source.VOICE, 2f, 0.75f)
     val SHINY_CATCH = Sound.sound(Key.key("block.amethyst_cluster.step"), Sound.Source.VOICE, 2f, 2f)
+    val SHADOW_CATCH = Sound.sound(Key.key("entity.wither.ambient"), Sound.Source.VOICE, 0.5f, 0f)
+    val OBFUSCATED_CATCH = Sound.sound(Key.key("entity.shulker.ambient"), Sound.Source.VOICE, 1.25f, 0.75f)
     val CAMPFIRE_DISALLOW_FISH_COOK = Sound.sound(Key.key("block.fire.extinguish"), Sound.Source.BLOCK, 1f, 0f)
     val ENDER_EYE_PLACE_FAIL = Sound.sound(Key.key("block.end_portal_frame.fill"), Sound.Source.BLOCK, 2f, 0.5f)
     val ENDER_EYE_PLACE_FAIL_BACKGROUND = Sound.sound(Key.key("entity.lightning_bolt.thunder"), Sound.Source.BLOCK, 1f, 2f)

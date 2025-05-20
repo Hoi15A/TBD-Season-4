@@ -66,12 +66,15 @@ object Fishing {
             SubRarity.SHINY -> {
                 fishMeta.setEnchantmentGlintOverride(true)
                 fishMeta.persistentDataContainer.set(FISH_IS_SHINY, PersistentDataType.BOOLEAN, true)
+                shinyEffect(item)
             }
             SubRarity.SHADOW -> {
                 fishMeta.persistentDataContainer.set(FISH_IS_SHADOW, PersistentDataType.BOOLEAN, true)
+                shadowEffect(item)
             }
             SubRarity.OBFUSCATED -> {
                 fishMeta.persistentDataContainer.set(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN, true)
+                obfuscatedEffect(item)
             }
         }
         fishMeta.persistentDataContainer.set(FISH_RARITY, PersistentDataType.STRING, fishRarity.name)
@@ -87,7 +90,6 @@ object Fishing {
         if (fishRarity.props.isAnimated) catchAnimation(player, item, location.add(0.0, 1.75, 0.0), fishRarity)
         if (fishRarity in listOf(FishRarity.LEGENDARY, FishRarity.MYTHIC, FishRarity.UNREAL)) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
         if (subRarity != SubRarity.NULL) logger.info("(FISHING) ${player.name} caught $subRarity ${item.name}.")
-        if (subRarity == SubRarity.SHINY) shinyEffect(item)
     }
 
     private fun catchText(catcher: Player, item: Item, fishRarity: FishRarity) {
@@ -273,12 +275,33 @@ object Fishing {
                             location.world.spawnParticle(
                                 Particle.DUST,
                                 location.clone().add(point),
-                                0,
-                                Particle.DustOptions(Color.RED, 1.5f)
+                                1, 0.0, 0.0, 0.0, 0.0,
+                                Particle.DustOptions(Color.RED, 1.5f),
+                                true
                             )
                         }
                         edges.forEach { (i, j) ->
                             drawEdge(location, rotated[i], rotated[j], 8, Color.RED)
+                        }
+                        if (time % 5 == 0) {
+                            location.world.playSound(location, "entity.blaze.ambient", 2f, 0.75f)
+                            val origin = rotated.random().clone()
+                            val direction = Vector(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiply(12.0)
+                            val startLoc = location.clone().add(origin)
+                            val steps = 16
+                            val delta = direction.clone().multiply(1.0 / steps)
+
+                            for (i in 0..steps) {
+                                val point = startLoc.clone().add(delta.clone().multiply(i))
+                                location.world.spawnParticle(
+                                    Particle.DUST,
+                                    point,
+                                    1, 0.0, 0.0, 0.0, 0.0,
+                                    Particle.DustOptions(Color.RED, 1.2f),
+                                    true
+                                )
+                            }
+                            firework(startLoc.clone().add(direction), flicker = false, trail = false, fishRarity.itemRarity.colour, FireworkEffect.Type.BURST, variedVelocity = false)
                         }
                         angle += Math.toRadians(4.0)
                     }
@@ -289,48 +312,59 @@ object Fishing {
             FishRarity.CELESTIAL -> {
                 Bukkit.getServer().playSound(Sounds.CELESTIAL_CATCH)
                 firework(location, flicker = true, trail = true, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL_LARGE, variedVelocity = false)
-                val radius = 12.0
-                val step = Math.PI / 16
-                for (angle in 0 until 12) {
-                    val x = radius * cos(angle * step)
-                    val z = radius * sin(angle * step)
-                    location.world.strikeLightningEffect(location.clone().add(x, 100.0, z))
-                    location.world.spawnParticle(
-                        Particle.FLASH,
-                        location.clone().add(x, 100.0, z),
-                        5, 0.0, 0.0, 0.0, 0.0, null, true
-                    )
-                    location.world.spawnParticle(
-                        Particle.CLOUD,
-                        location.clone().add(x, 100.0, z),
-                        10, 0.0, 0.0, 0.0, 0.5, null, true
-                    )
-                }
-                for(i in 0..39) {
-                    object : BukkitRunnable() {
-                        override fun run() {
-                            val randomX = Random.nextDouble(location.x - 20.0, location.x + 20.0)
-                            val randomZ = Random.nextDouble(location.z - 20.0, location.z + 20.0)
-                            var height = location.blockY + 100
-                            object : BukkitRunnable() {
-                                override fun run() {
-                                    if(height > location.blockY) {
-                                        firework(Location(location.world, randomX, height.toDouble(), randomZ), flicker = false, trail = false, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL, variedVelocity = false)
-                                        height -= 2
-                                    } else {
-                                        location.world.playSound(Location(location.world, randomX, height.toDouble(), randomZ), "item.totem.use", 0.75f, 0.75f)
-                                        location.world.spawnParticle(
-                                            Particle.TOTEM_OF_UNDYING,
-                                            Location(location.world, randomX, height.toDouble(), randomZ),
-                                            250, 0.0, 0.0, 0.0, 0.75, null, true
-                                        )
-                                        cancel()
+                var riseHeight = location.blockY
+                object : BukkitRunnable() {
+                    override fun run() {
+                        if(riseHeight < location.blockY + 100) {
+                            firework(Location(location.world, location.x, riseHeight.toDouble(), location.z), flicker = false, trail = false, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL, variedVelocity = false)
+                            riseHeight += 2
+                        } else {
+                            cancel()
+                            location.world.spawnParticle(
+                                Particle.CLOUD,
+                                location.clone().add(0.0, 100.0, 0.0),
+                                5000, 0.0, 0.0, 0.0, 0.5, null, true
+                            )
+                            val radius = 12.0
+                            val step = Math.PI / 16
+                            for (angle in 0 until 12) {
+                                val x = radius * cos(angle * step)
+                                val z = radius * sin(angle * step)
+                                location.world.strikeLightningEffect(location.clone().add(x, 100.0, z))
+                                location.world.spawnParticle(
+                                    Particle.FLASH,
+                                    location.clone().add(x, 100.0, z),
+                                    1, 0.0, 0.0, 0.0, 0.0, null, true
+                                )
+                            }
+                            for(i in 0..39) {
+                                object : BukkitRunnable() {
+                                    override fun run() {
+                                        val randomX = Random.nextDouble(location.x - 20.0, location.x + 20.0)
+                                        val randomZ = Random.nextDouble(location.z - 20.0, location.z + 20.0)
+                                        var descendHeight = location.blockY + 100
+                                        object : BukkitRunnable() {
+                                            override fun run() {
+                                                if(descendHeight > location.blockY) {
+                                                    firework(Location(location.world, randomX, descendHeight.toDouble(), randomZ), flicker = false, trail = false, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL, variedVelocity = false)
+                                                    descendHeight -= 2
+                                                } else {
+                                                    location.world.playSound(Location(location.world, randomX, descendHeight.toDouble(), randomZ), "item.totem.use", 1f, 0.75f)
+                                                    location.world.spawnParticle(
+                                                        Particle.TOTEM_OF_UNDYING,
+                                                        Location(location.world, randomX, descendHeight.toDouble(), randomZ),
+                                                        250, 0.0, 0.0, 0.0, 0.75, null, true
+                                                    )
+                                                    cancel()
+                                                }
+                                            }
+                                        }.runTaskTimer(plugin, 0L, 4L)
                                     }
-                                }
-                            }.runTaskTimer(plugin, 0L, 4L)
+                                }.runTaskLater(plugin, 0L + (i.toLong() * 15))
+                            }
                         }
-                    }.runTaskLater(plugin, 0L + (i.toLong() * 15))
-                }
+                    }
+                }.runTaskTimer(plugin, 0L, 1L)
             }
             else -> { /* do nothing */ }
         }
@@ -373,8 +407,9 @@ object Fishing {
             world.spawnParticle(
                 Particle.DUST,
                 origin.clone().add(point),
-                0,
-                Particle.DustOptions(color, 1.0f)
+                1, 0.0, 0.0, 0.0, 0.0,
+                Particle.DustOptions(color, 1.0f),
+                true
             )
         }
     }
@@ -514,6 +549,46 @@ object Fishing {
                 i++
             }
         }.runTaskTimer(plugin, 0L, 5L)
+    }
+
+    fun shadowEffect(item: Item) {
+        Bukkit.getServer().playSound(Sounds.SHADOW_CATCH)
+        object : BukkitRunnable() {
+            var i = 0
+            override fun run() {
+                if(i % 2 == 0) {
+                    item.location.world.spawnParticle(
+                        Particle.SMOKE,
+                        item.location.clone().add(0.0, 0.5, 0.0),
+                        20, 0.0, 0.0, 0.0, 0.05
+                    )
+                }
+                if(i >= 100 || item.isDead) {
+                    cancel()
+                }
+                i++
+            }
+        }.runTaskTimer(plugin, 0L, 5L)
+    }
+
+    fun obfuscatedEffect(item: Item) {
+        Bukkit.getServer().playSound(Sounds.OBFUSCATED_CATCH)
+        object : BukkitRunnable() {
+            var i = 0
+            override fun run() {
+                if(i % 2 == 0) {
+                    item.location.world.spawnParticle(
+                        Particle.ENCHANT,
+                        item.location.clone().add(0.0, 0.5, 0.0),
+                        5, 0.25, 0.25, 0.25, 0.1
+                    )
+                }
+                if(i >= 500 || item.isDead) {
+                    cancel()
+                }
+                i++
+            }
+        }.runTaskTimer(plugin, 0L, 1L)
     }
 
     fun firework(
