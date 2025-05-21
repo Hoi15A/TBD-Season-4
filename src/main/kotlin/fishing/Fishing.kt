@@ -43,10 +43,10 @@ object Fishing {
         val subRarity = forcedFishSubRarity ?: SubRarity.getRandomSubRarity()
 
         val caughtByLore =
-            if (fishRarity.props.showCatcher || subRarity != SubRarity.NULL) allTags.deserialize("<reset><white>Caught by <yellow>${player.name}<white>.").decoration(TextDecoration.ITALIC, false) else null
+            if (fishRarity.props.showCatcher || subRarity != SubRarity.NULL) allTags.deserialize("<reset>${if (subRarity == SubRarity.SHADOW) "<#0><shadow:white>" else "<white>"}${if (subRarity == SubRarity.OBFUSCATED) "<font:alt>" else ""}Caught by ${if (subRarity == SubRarity.SHADOW) "<#0><shadow:yellow>" else "<yellow>"}${player.name}${if (subRarity == SubRarity.SHADOW) "<#0><shadow:white>" else "<white>"}${if (subRarity == SubRarity.OBFUSCATED) "</font:alt>" else ""}.").decoration(TextDecoration.ITALIC, false) else null
         val fishMeta = item.itemStack.itemMeta
         fishMeta.displayName(
-            allTags.deserialize("<${fishRarity.itemRarity.colourHex}>${if(subRarity == SubRarity.OBFUSCATED) "<font:alt>" else ""}${item.name}").decoration(TextDecoration.ITALIC, false)
+            allTags.deserialize("${if (subRarity == SubRarity.SHADOW) "<#0><shadow:${fishRarity.itemRarity.colourHex}>" else "<${fishRarity.itemRarity.colourHex}>"}${if(subRarity == SubRarity.OBFUSCATED) "<font:alt>" else ""}${item.name}").decoration(TextDecoration.ITALIC, false)
         )
         fishMeta.lore(
             if (caughtByLore == null) {
@@ -88,7 +88,7 @@ object Fishing {
         if (fishRarity.props.sendGlobalMsg) catchText(player, item, fishRarity)
         if (fishRarity.props.sendGlobalTitle) catchTitle(player, item, fishRarity)
         if (fishRarity.props.isAnimated) catchAnimation(player, item, location.add(0.0, 1.75, 0.0), fishRarity)
-        if (fishRarity in listOf(FishRarity.LEGENDARY, FishRarity.MYTHIC, FishRarity.UNREAL)) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
+        if (fishRarity in listOf(FishRarity.LEGENDARY, FishRarity.MYTHIC, FishRarity.UNREAL, FishRarity.TRANSCENDENT, FishRarity.CELESTIAL)) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
         if (subRarity != SubRarity.NULL) logger.info("(FISHING) ${player.name} caught $subRarity ${item.name}.")
     }
 
@@ -262,15 +262,16 @@ object Fishing {
             }
             FishRarity.TRANSCENDENT -> {
                 Bukkit.getServer().playSound(Sounds.TRANSCENDENT_CATCH)
+                Bukkit.getServer().playSound(Sounds.TRANSCENDENT_CATCH_SPAWN)
                 object : BukkitRunnable() {
                     val radius = 5.0
-                    val vertices = generateVertices(radius)
-                    val edges = getEdges()
+                    val vertices = transcendentGenerateVertices(radius)
+                    val edges = transcendentGetEdges()
                     var angle = 0.0
                     var time = 0
                     override fun run() {
                         if (time++ >= 300) cancel()
-                        val rotated = vertices.map { rotateY(it, angle) }
+                        val rotated = vertices.map { transcendentRotateY(it, angle) }
                         rotated.forEach { point ->
                             location.world.spawnParticle(
                                 Particle.DUST,
@@ -281,7 +282,7 @@ object Fishing {
                             )
                         }
                         edges.forEach { (i, j) ->
-                            drawEdge(location, rotated[i], rotated[j], 8, Color.RED)
+                            transcendentDrawEdge(location, rotated[i], rotated[j], 8, Color.RED)
                         }
                         if (time % 5 == 0) {
                             location.world.playSound(location, "entity.blaze.ambient", 2f, 0.75f)
@@ -311,20 +312,24 @@ object Fishing {
             }
             FishRarity.CELESTIAL -> {
                 Bukkit.getServer().playSound(Sounds.CELESTIAL_CATCH)
+                Bukkit.getServer().playSound(Sounds.CELESTIAL_CATCH_SPAWN)
                 firework(location, flicker = true, trail = true, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL_LARGE, variedVelocity = false)
                 var riseHeight = location.blockY
                 object : BukkitRunnable() {
                     override fun run() {
                         if(riseHeight < location.blockY + 100) {
-                            firework(Location(location.world, location.x, riseHeight.toDouble(), location.z), flicker = false, trail = false, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL, variedVelocity = false)
+                            firework(Location(location.world, location.x, riseHeight.toDouble(), location.z), flicker = false, trail = false, Color.GRAY, FireworkEffect.Type.BALL, variedVelocity = false)
                             riseHeight += 2
                         } else {
                             cancel()
-                            location.world.spawnParticle(
-                                Particle.CLOUD,
-                                location.clone().add(0.0, 100.0, 0.0),
-                                5000, 0.0, 0.0, 0.0, 0.5, null, true
-                            )
+                            for(i in 0..3) {
+                                location.world.spawnParticle(
+                                    Particle.CLOUD,
+                                    location.clone().add(0.0, 100.0, 0.0),
+                                    2500, 0.0, 0.0, 0.0, 0.5, null, true
+                                )
+                            }
+
                             val radius = 12.0
                             val step = Math.PI / 16
                             for (angle in 0 until 12) {
@@ -370,13 +375,11 @@ object Fishing {
         }
     }
 
-    // TRANSCENDENT DODECAHEDRON METHODS
-    fun generateVertices(r: Double): List<Vector> {
+    fun transcendentGenerateVertices(r: Double): List<Vector> {
         val phi = (1 + sqrt(5.0)) / 2
         val a = 1.0 / sqrt(3.0)
         val b = a / phi
         val c = a * phi
-
         return listOf(
             Vector( a,  a,  a), Vector( a,  a, -a), Vector( a, -a,  a), Vector( a, -a, -a),
             Vector(-a,  a,  a), Vector(-a,  a, -a), Vector(-a, -a,  a), Vector(-a, -a, -a),
@@ -386,20 +389,20 @@ object Fishing {
         ).map { it.multiply(r) }
     }
 
-    fun getEdges(): List<Pair<Int, Int>> = listOf(
+    fun transcendentGetEdges(): List<Pair<Int, Int>> = listOf(
         0 to 8, 0 to 12, 0 to 16, 1 to 9, 1 to 12, 1 to 17, 2 to 10, 2 to 13, 2 to 16,
         3 to 11, 3 to 13, 3 to 17, 4 to 8, 4 to 14, 4 to 18, 5 to 9, 5 to 14, 5 to 19,
         6 to 10, 6 to 15, 6 to 18, 7 to 11, 7 to 15, 7 to 19, 8 to 10, 9 to 11,
         12 to 14, 13 to 15, 16 to 17, 18 to 19
     )
 
-    fun rotateY(v: Vector, angle: Double): Vector {
+    fun transcendentRotateY(v: Vector, angle: Double): Vector {
         val cos = cos(angle)
         val sin = sin(angle)
         return Vector(v.x * cos - v.z * sin, v.y, v.x * sin + v.z * cos)
     }
 
-    fun drawEdge(origin: Location, start: Vector, end: Vector, steps: Int, color: Color) {
+    fun transcendentDrawEdge(origin: Location, start: Vector, end: Vector, steps: Int, color: Color) {
         val delta = end.clone().subtract(start).multiply(1.0 / steps)
         val world = origin.world
         for (i in 0..steps) {

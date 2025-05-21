@@ -29,4 +29,11 @@ class Announcement {
             "In $time minute${if (time > 1) "s" else ""}."
         )
     }
+
+    @Command("announcelore <text>")
+    @CommandDescription("Broadcasts the specified text.")
+    @Permission("tbd.cmd.announce")
+    fun announceLore(css: CommandSourceStack, @Argument("text") text: Array<String>) {
+        Notification.announceChat(text.joinToString(" "))
+    }
 }

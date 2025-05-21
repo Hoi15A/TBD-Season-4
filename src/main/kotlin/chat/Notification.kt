@@ -5,6 +5,7 @@ import util.Sounds
 import logger
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.title.Title
 import net.kyori.adventure.title.Title.Times
 
@@ -33,5 +34,11 @@ object Notification {
                 times
             )
         )
+    }
+
+    fun announceChat(message: String) {
+        val online = Audience.audience(Bukkit.getOnlinePlayers())
+        online.sendMessage(allTags.deserialize(message).color(TextColor.fromHexString("#32FF82")))
+        online.playSound(Sounds.LORE_ANNOUNCEMENT)
     }
 }
