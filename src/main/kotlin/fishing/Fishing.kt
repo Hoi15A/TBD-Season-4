@@ -30,6 +30,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
+import org.bukkit.inventory.ItemStack
 
 object Fishing {
     fun catchFish(
@@ -630,5 +631,13 @@ object Fishing {
             f.fireworkMeta = fm
             f.ticksToDetonate = 0
         }
+    }
+
+    fun ItemStack.hasSubRarity(): Boolean {
+        val isShiny = persistentDataContainer.get(FISH_IS_SHINY, PersistentDataType.BOOLEAN) ?: false
+        val isShadow = persistentDataContainer.get(FISH_IS_SHADOW, PersistentDataType.BOOLEAN) ?: false
+        val isObfuscated = persistentDataContainer.get(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN) ?: false
+
+        return isShiny || isShadow || isObfuscated
     }
 }
