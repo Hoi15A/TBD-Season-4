@@ -26,12 +26,12 @@ class PlayerItemConsume : Listener {
     fun consumeFish(event: PlayerItemConsumeEvent, rarityStr: String) {
         val rarity = FishRarity.valueOf(rarityStr)
         if (rarity.props.sendGlobalMsg || event.item.hasSubRarity()) {
-            val component = playerCaughtFishComponent(rarity, event.player, event.item)
+            val component = playerConsumeFishComponent(rarity, event.player, event.item)
             Bukkit.getServer().sendMessage(component)
         }
     }
 
-    private fun playerCaughtFishComponent(
+    private fun playerConsumeFishComponent(
         fishRarity: FishRarity,
         catcher: Player,
         item: ItemStack

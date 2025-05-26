@@ -91,6 +91,10 @@ object Fishing {
         if (fishRarity.props.isAnimated) catchAnimation(player, item, location.add(0.0, 1.75, 0.0), fishRarity)
         if (fishRarity in listOf(FishRarity.LEGENDARY, FishRarity.MYTHIC, FishRarity.UNREAL, FishRarity.TRANSCENDENT, FishRarity.CELESTIAL)) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
         if (subRarity != SubRarity.NONE) logger.info("(FISHING) ${player.name} caught $subRarity ${item.name}.")
+
+        if (FishingSocial.isActive()) {
+            FishingSocial.addScore(player, fishRarity, subRarity)
+        }
     }
 
     private fun catchText(catcher: Player, item: Item, fishRarity: FishRarity) {
@@ -438,7 +442,7 @@ object Fishing {
         }.runTaskTimer(plugin, 0L, 2L)
     }
 
-    private fun legendaryEffect(location: Location) {
+    fun legendaryEffect(location: Location) {
         val effectLoc = location.clone()
         for (i in 0..3) {
             object : BukkitRunnable() {
