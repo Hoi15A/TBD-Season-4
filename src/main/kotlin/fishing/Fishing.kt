@@ -117,14 +117,8 @@ object Fishing {
     ) = allTags.deserialize(
         "<tbdcolour>${catcher.name}<reset> caught a${
             if (fishRarity.itemRarity.rarityName.startsWithVowel()) "n " else " "
-        }<${fishRarity.itemRarity.colourHex}><b>${fishRarity.name}</b> ${
-            item.name.replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(
-                    Locale.getDefault()
-                ) else it.toString()
-            }
-        }<reset>"
-    )
+        }<${fishRarity.itemRarity.colourHex}><b>${fishRarity.name}</b> "
+    ).append(item.itemStack.effectiveName().hoverEvent(item.itemStack)).append(Component.text("."))
 
     private fun catchAnimation(catcher: Player, item: Item, location: Location, fishRarity: FishRarity) {
         when (fishRarity) {
