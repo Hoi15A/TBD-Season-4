@@ -30,6 +30,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
+import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 
 object Fishing {
@@ -86,7 +87,7 @@ object Fishing {
                 .append(item.itemStack.effectiveName()).append(allTags.deserialize("<reset>."))
         )
 
-        if (fishRarity.props.sendGlobalMsg) catchText(player, item, fishRarity)
+        if (fishRarity.props.sendGlobalMsg || subRarity != SubRarity.NONE) catchText(player, item, fishRarity)
         if (fishRarity.props.sendGlobalTitle) catchTitle(player, item, fishRarity)
         if (fishRarity.props.isAnimated) catchAnimation(player, item, location.add(0.0, 1.75, 0.0), fishRarity)
         if (fishRarity in listOf(FishRarity.LEGENDARY, FishRarity.MYTHIC, FishRarity.UNREAL, FishRarity.TRANSCENDENT, FishRarity.CELESTIAL)) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
