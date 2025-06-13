@@ -1,6 +1,9 @@
 package event.player
 
 import chat.Formatting
+import item.ItemRarity
+import java.net.URI
+import java.util.UUID
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -19,6 +22,9 @@ import util.pdc.LocationArrayDataType
 import util.secondsToTicks
 import kotlin.math.max
 import kotlin.math.min
+import org.bukkit.Bukkit
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 
 class EnderEyeInteract: Listener {
     @EventHandler
@@ -47,6 +53,10 @@ class EnderEyeInteract: Listener {
             framesWithEyes.add(clickedBlock.location.toBlockLocation())
             clickedBlock.world.persistentDataContainer.set(END_PORTAL_FRAMES_WITH_EYE, LocationArrayDataType(), framesWithEyes.toTypedArray())
             shatterExistingEyes(event, framesWithEyes.toList())
+
+            val portalFrameState = clickedBlock.blockData as EndPortalFrame
+            if(portalFrameState.hasEye()) return
+            giveMemento(event)
         }
     }
 
@@ -90,5 +100,25 @@ class EnderEyeInteract: Listener {
             }
         }
         return blocks
+    }
+
+    fun giveMemento(event: PlayerInteractEvent) {
+        val player = event.player
+        val trueEye = event.item!!
+        val lore = trueEye.itemMeta.lore()!!
+        lore[1] = Formatting.allTags.deserialize("<!i><yellow>You feel a strange energy emerging from within.")
+
+        val memento = ItemStack(Material.PLAYER_HEAD)
+        val mementoMeta = memento.itemMeta as SkullMeta
+        val mementoProfile = Bukkit.createProfile(UUID.randomUUID())
+        val mementoTexture = mementoProfile.textures
+        mementoTexture.skin = URI("http://textures.minecraft.net/texture/d39f1c0ddcf53833bac5fbf57715f7c253eefd2872ff27e4a893be30529bc685").toURL()
+        mementoProfile.setTextures(mementoTexture)
+        mementoMeta.playerProfile = mementoProfile
+        mementoMeta.lore(lore)
+        mementoMeta.displayName(Formatting.allTags.deserialize("<!i><${ItemRarity.EPIC.colourHex}>Remnant of a True Eye"))
+        memento.itemMeta = mementoMeta
+
+        player.inventory.addItem(memento)
     }
 }
