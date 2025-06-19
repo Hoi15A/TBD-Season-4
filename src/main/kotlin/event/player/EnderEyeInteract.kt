@@ -23,10 +23,10 @@ import util.pdc.LocationArrayDataType
 import util.secondsToTicks
 import kotlin.math.max
 import kotlin.math.min
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
+import util.Keys
 
 class EnderEyeInteract: Listener {
     @EventHandler
@@ -118,6 +118,7 @@ class EnderEyeInteract: Listener {
         mementoMeta.playerProfile = mementoProfile
         mementoMeta.lore(newLore)
         mementoMeta.displayName(Formatting.allTags.deserialize("<!i><${ItemRarity.EPIC.colourHex}>Remnant of a True Eye"))
+        mementoMeta.persistentDataContainer.set(Keys.MEMENTO_TYPE, PersistentDataType.STRING, "true_eye_memento")
         memento.itemMeta = mementoMeta
 
         player.inventory.addItem(memento)
