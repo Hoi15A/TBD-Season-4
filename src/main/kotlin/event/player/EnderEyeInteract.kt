@@ -2,6 +2,7 @@ package event.player
 
 import chat.Formatting
 import item.ItemRarity
+import item.ItemType
 import java.net.URI
 import java.util.UUID
 import org.bukkit.Location
@@ -22,6 +23,7 @@ import util.pdc.LocationArrayDataType
 import util.secondsToTicks
 import kotlin.math.max
 import kotlin.math.min
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
@@ -105,8 +107,7 @@ class EnderEyeInteract: Listener {
     fun giveMemento(event: PlayerInteractEvent) {
         val player = event.player
         val trueEye = event.item!!
-        val lore = trueEye.itemMeta.lore()!!
-        lore[1] = Formatting.allTags.deserialize("<!i><yellow>You feel a strange energy emerging from within.")
+        val newLore = mutableListOf("<white><!i>${ItemRarity.EPIC.rarityGlyph}${ItemType.MEMENTO.typeGlyph}", "<!i><yellow>You feel a strange energy emerging from within.").map { Formatting.allTags.deserialize(it) } + trueEye.itemMeta.lore()!![2]
 
         val memento = ItemStack(Material.PLAYER_HEAD)
         val mementoMeta = memento.itemMeta as SkullMeta
@@ -115,7 +116,7 @@ class EnderEyeInteract: Listener {
         mementoTexture.skin = URI("http://textures.minecraft.net/texture/d39f1c0ddcf53833bac5fbf57715f7c253eefd2872ff27e4a893be30529bc685").toURL()
         mementoProfile.setTextures(mementoTexture)
         mementoMeta.playerProfile = mementoProfile
-        mementoMeta.lore(lore)
+        mementoMeta.lore(newLore)
         mementoMeta.displayName(Formatting.allTags.deserialize("<!i><${ItemRarity.EPIC.colourHex}>Remnant of a True Eye"))
         memento.itemMeta = mementoMeta
 
