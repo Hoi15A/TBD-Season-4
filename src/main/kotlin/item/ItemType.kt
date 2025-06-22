@@ -6,5 +6,6 @@ enum class ItemType(val typeName : String, val typeGlyph : String) {
     TOOL("Tool", "\uF011"),
     UTILITY("Utility", "\uF012"),
     WEAPON("Weapon", "\uF013"),
-    FISH("Fish", "\uF014")
+    FISH("Fish", "\uF014"),
+    MEMENTO("Memento", "\uF016")
 }
