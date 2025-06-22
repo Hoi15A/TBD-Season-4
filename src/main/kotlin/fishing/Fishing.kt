@@ -23,7 +23,6 @@ import util.Keys.FISH_IS_SHINY
 import util.startsWithVowel
 
 import java.time.Duration
-import java.util.*
 
 import kotlin.collections.ArrayList
 import kotlin.math.cos
@@ -168,34 +167,7 @@ object Fishing {
             }
             FishRarity.MYTHIC -> {
                 Bukkit.getServer().playSound(Sounds.MYTHIC_CATCH)
-                for (i in 0..15) {
-                    object : BukkitRunnable() {
-                        override fun run() {
-                            firework(
-                                location,
-                                flicker = true,
-                                trail = false,
-                                fishRarity.itemRarity.colour,
-                                if (i <= 11) FireworkEffect.Type.BALL_LARGE else FireworkEffect.Type.BALL,
-                                false
-                            )
-                        }
-                    }.runTaskLater(plugin, i * 2L)
-                }
-                for (i in 0..60) {
-                    object : BukkitRunnable() {
-                        override fun run() {
-                            firework(
-                                location,
-                                i % 2 == 0,
-                                i % 3 == 0,
-                                fishRarity.itemRarity.colour,
-                                if (i % 2 == 0) FireworkEffect.Type.BALL_LARGE else FireworkEffect.Type.BALL,
-                                true
-                            )
-                        }
-                    }.runTaskLater(plugin, (i * 3L) + 30L)
-                }
+                mythicEffect(location)
             }
             FishRarity.UNREAL -> {
                 val server = Bukkit.getServer()
@@ -474,6 +446,37 @@ object Fishing {
                     }
                 }
             }.runTaskLater(plugin, i * 2L)
+        }
+    }
+
+    fun mythicEffect(location: Location) {
+        for (i in 0..15) {
+            object : BukkitRunnable() {
+                override fun run() {
+                    firework(
+                        location,
+                        flicker = true,
+                        trail = false,
+                        ItemRarity.MYTHIC.colour,
+                        if (i <= 11) FireworkEffect.Type.BALL_LARGE else FireworkEffect.Type.BALL,
+                        false
+                    )
+                }
+            }.runTaskLater(plugin, i * 2L)
+        }
+        for (i in 0..60) {
+            object : BukkitRunnable() {
+                override fun run() {
+                    firework(
+                        location,
+                        i % 2 == 0,
+                        i % 3 == 0,
+                        ItemRarity.MYTHIC.colour,
+                        if (i % 2 == 0) FireworkEffect.Type.BALL_LARGE else FireworkEffect.Type.BALL,
+                        true
+                    )
+                }
+            }.runTaskLater(plugin, (i * 3L) + 30L)
         }
     }
 

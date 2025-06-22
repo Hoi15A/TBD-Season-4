@@ -13,15 +13,25 @@ import util.timeRemainingFormatted
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class Social {
-    @Command("fishingsocial <time>")
+    @Command("fishingsocial start <time>")
     @Permission("tbd.command.social")
-    fun fishingSocial(css: CommandSourceStack, @Argument("time") time: Int) {
+    fun fishingSocialStart(css: CommandSourceStack, @Argument("time") time: Int) {
         if(time in 1..120) {
             if(css.sender is Player) {
                 val player = css.sender as Player
                 ChatUtility.broadcastDev("Fishing Social <dark_gray>(${time.timeRemainingFormatted()})</dark_gray> started by ${player.name}.", false)
                 FishingSocial.startFishingSocial(time)
             }
+        }
+    }
+
+    @Command("fishingsocial stop")
+    @Permission("tbd.command.social")
+    fun fishingSocialStop(css: CommandSourceStack) {
+        if(css.sender is Player) {
+            val player = css.sender as Player
+            ChatUtility.broadcastDev("Fishing Social stopped by ${player.name}.", false)
+            FishingSocial.stopFishingSocial()
         }
     }
 }
