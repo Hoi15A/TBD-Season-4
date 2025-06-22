@@ -108,7 +108,7 @@ class EnderEyeInteract: Listener {
         val player = event.player
         val trueEye = event.item!!
         val baseLore = listOf("<white><!i>${ItemRarity.EPIC.rarityGlyph}${ItemType.MEMENTO.typeGlyph}", "<!i><yellow>You feel a strange energy emerging from within.").map { Formatting.allTags.deserialize(it) }
-        val obtainedLore = listOf("", "<!i><grey>Earned by: <white>${event.player.name}").map { Formatting.allTags.deserialize(it) }
+        val obtainedLore = listOf("", "<!i><grey>Placed by: <white>${event.player.name}").map { Formatting.allTags.deserialize(it) }
         val newLore = baseLore + trueEye.itemMeta.lore()!![2] + obtainedLore
 
         val memento = ItemStack(Material.PLAYER_HEAD)
