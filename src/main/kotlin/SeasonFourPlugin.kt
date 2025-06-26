@@ -2,6 +2,7 @@ import chat.VisualChat
 import event.*
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import lore.Divinity
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.incendo.cloud.annotations.AnnotationParser
@@ -33,6 +34,7 @@ class SeasonFourPlugin : JavaPlugin() {
         this.logger.info("It is so over.")
         Bukkit.getServer().scoreboardManager.mainScoreboard.teams.forEach { team -> if(team.name.contains("tbd.true_eye.")) team.unregister() }
         VisualChat.clearChatEntities()
+        Divinity.clearChains()
     }
 
     private fun setupEvents() {
@@ -48,6 +50,7 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(DamageEvent(), this)
         server.pluginManager.registerEvents(EnderEyeInteract(), this)
         server.pluginManager.registerEvents(PlayerItemConsume(), this)
+        server.pluginManager.registerEvents(PlayerMovement(), this)
     }
 
     private fun registerCommands() {

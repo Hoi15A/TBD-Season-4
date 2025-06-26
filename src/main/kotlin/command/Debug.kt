@@ -5,6 +5,7 @@ import fishing.Fishing
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import item.SubRarity
 import logger
+import lore.Divinity
 import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -60,5 +61,17 @@ class Debug {
         for(rarity in SubRarity.entries) {
             logger.info("${rarity.name}: ${catchesSR.filter { r -> r == rarity }.size}")
         }
+    }
+
+    @Command("chain <player>")
+    @Permission("tbd.command.debug")
+    fun debugChain(css: CommandSourceStack, @Argument("player") player: Player) {
+        Divinity.chainPlayer(player)
+    }
+
+    @Command("unchain <player>")
+    @Permission("tbd.command.debug")
+    fun debugUnchain(css: CommandSourceStack, @Argument("player") player: Player) {
+        Divinity.unchainPlayer(player)
     }
 }

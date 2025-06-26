@@ -12,6 +12,8 @@ object Keys {
     val TRUE_EYE = NamespacedKey(plugin, "eye_of_ender.true_eye")
     val END_PORTAL_FRAMES_WITH_EYE = NamespacedKey(plugin, "end_portal_frames.with_true_eye")
 
+    val DIVINITY_CHAINS = NamespacedKey(plugin, "divinity.can_chain")
+
     val CURRENCY_HASH = NamespacedKey(plugin, "currency.sha256")
 
     val PDC_LOCATION_WORLD = NamespacedKey(plugin, "pdc.type.location_world")!!
