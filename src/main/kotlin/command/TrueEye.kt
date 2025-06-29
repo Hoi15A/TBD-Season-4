@@ -30,7 +30,7 @@ import kotlin.math.sin
 
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
-class TrueEyeCommand {
+class TrueEye {
     @Command("trueeye <position> [lore]")
     @Permission("tbd.command.eye")
     fun mintEye(css: CommandSourceStack, position: Location, @Greedy lore: String?) {

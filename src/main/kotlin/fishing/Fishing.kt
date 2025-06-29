@@ -23,13 +23,13 @@ import util.Keys.FISH_IS_SHINY
 import util.startsWithVowel
 
 import java.time.Duration
-import java.util.*
 
 import kotlin.collections.ArrayList
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
+import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 
 object Fishing {
@@ -86,11 +86,15 @@ object Fishing {
                 .append(item.itemStack.effectiveName()).append(allTags.deserialize("<reset>."))
         )
 
-        if (fishRarity.props.sendGlobalMsg) catchText(player, item, fishRarity)
+        if (fishRarity.props.sendGlobalMsg || subRarity != SubRarity.NONE) catchText(player, item, fishRarity)
         if (fishRarity.props.sendGlobalTitle) catchTitle(player, item, fishRarity)
         if (fishRarity.props.isAnimated) catchAnimation(player, item, location.add(0.0, 1.75, 0.0), fishRarity)
         if (fishRarity in listOf(FishRarity.LEGENDARY, FishRarity.MYTHIC, FishRarity.UNREAL, FishRarity.TRANSCENDENT, FishRarity.CELESTIAL)) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
         if (subRarity != SubRarity.NONE) logger.info("(FISHING) ${player.name} caught $subRarity ${item.name}.")
+
+        if (FishingSocial.isActive()) {
+            FishingSocial.addScore(player, fishRarity, subRarity)
+        }
     }
 
     private fun catchText(catcher: Player, item: Item, fishRarity: FishRarity) {
@@ -116,14 +120,8 @@ object Fishing {
     ) = allTags.deserialize(
         "<tbdcolour>${catcher.name}<reset> caught a${
             if (fishRarity.itemRarity.rarityName.startsWithVowel()) "n " else " "
-        }<${fishRarity.itemRarity.colourHex}><b>${fishRarity.name}</b> ${
-            item.name.replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(
-                    Locale.getDefault()
-                ) else it.toString()
-            }
-        }<reset>"
-    )
+        }<${fishRarity.itemRarity.colourHex}><b>${fishRarity.name}</b> "
+    ).append(item.itemStack.effectiveName().hoverEvent(item.itemStack)).append(Component.text("."))
 
     private fun catchAnimation(catcher: Player, item: Item, location: Location, fishRarity: FishRarity) {
         when (fishRarity) {
@@ -169,34 +167,7 @@ object Fishing {
             }
             FishRarity.MYTHIC -> {
                 Bukkit.getServer().playSound(Sounds.MYTHIC_CATCH)
-                for (i in 0..15) {
-                    object : BukkitRunnable() {
-                        override fun run() {
-                            firework(
-                                location,
-                                flicker = true,
-                                trail = false,
-                                fishRarity.itemRarity.colour,
-                                if (i <= 11) FireworkEffect.Type.BALL_LARGE else FireworkEffect.Type.BALL,
-                                false
-                            )
-                        }
-                    }.runTaskLater(plugin, i * 2L)
-                }
-                for (i in 0..60) {
-                    object : BukkitRunnable() {
-                        override fun run() {
-                            firework(
-                                location,
-                                i % 2 == 0,
-                                i % 3 == 0,
-                                fishRarity.itemRarity.colour,
-                                if (i % 2 == 0) FireworkEffect.Type.BALL_LARGE else FireworkEffect.Type.BALL,
-                                true
-                            )
-                        }
-                    }.runTaskLater(plugin, (i * 3L) + 30L)
-                }
+                mythicEffect(location)
             }
             FishRarity.UNREAL -> {
                 val server = Bukkit.getServer()
@@ -438,7 +409,7 @@ object Fishing {
         }.runTaskTimer(plugin, 0L, 2L)
     }
 
-    private fun legendaryEffect(location: Location) {
+    fun legendaryEffect(location: Location) {
         val effectLoc = location.clone()
         for (i in 0..3) {
             object : BukkitRunnable() {
@@ -475,6 +446,37 @@ object Fishing {
                     }
                 }
             }.runTaskLater(plugin, i * 2L)
+        }
+    }
+
+    fun mythicEffect(location: Location) {
+        for (i in 0..15) {
+            object : BukkitRunnable() {
+                override fun run() {
+                    firework(
+                        location,
+                        flicker = true,
+                        trail = false,
+                        ItemRarity.MYTHIC.colour,
+                        if (i <= 11) FireworkEffect.Type.BALL_LARGE else FireworkEffect.Type.BALL,
+                        false
+                    )
+                }
+            }.runTaskLater(plugin, i * 2L)
+        }
+        for (i in 0..60) {
+            object : BukkitRunnable() {
+                override fun run() {
+                    firework(
+                        location,
+                        i % 2 == 0,
+                        i % 3 == 0,
+                        ItemRarity.MYTHIC.colour,
+                        if (i % 2 == 0) FireworkEffect.Type.BALL_LARGE else FireworkEffect.Type.BALL,
+                        true
+                    )
+                }
+            }.runTaskLater(plugin, (i * 3L) + 30L)
         }
     }
 

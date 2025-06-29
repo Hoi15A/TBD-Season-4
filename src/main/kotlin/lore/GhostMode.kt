@@ -2,9 +2,11 @@ package lore
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 
 import plugin
+import util.Keys.TRUE_EYE
 
 import kotlin.math.acos
 
@@ -27,21 +29,26 @@ object GhostMode {
                     for (viewer in Bukkit.getOnlinePlayers()) {
                         if (viewer != player) {
                             if(player.world == viewer.world) {
-                                if(viewer.location.distanceSquared(player.location) <= 10000) {
-                                    val isPeripheral = isInPeripheralView(viewer, player)
-                                    if(isPeripheral) {
-                                        viewer.showPlayer(plugin, player)
+                                if(viewer.inventory.itemInMainHand.persistentDataContainer.get(TRUE_EYE, PersistentDataType.BOOLEAN) == true || viewer.inventory.itemInOffHand.persistentDataContainer.get(TRUE_EYE, PersistentDataType.BOOLEAN) == true) {
+                                    viewer.showPlayer(plugin, player)
+                                } else {
+                                    if(viewer.location.distanceSquared(player.location) <= 10000) {
+                                        val isPeripheral = isInPeripheralView(viewer, player)
+                                        if(isPeripheral) {
+                                            viewer.showPlayer(plugin, player)
+                                        } else {
+                                            viewer.hidePlayer(plugin, player)
+                                        }
                                     } else {
                                         viewer.hidePlayer(plugin, player)
                                     }
-                                } else {
-                                    viewer.hidePlayer(plugin, player)
                                 }
                             }
 
                         }
                     }
                 } else {
+                    toggleGhostMode(player)
                     cancel()
                 }
 

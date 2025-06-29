@@ -28,7 +28,9 @@ object Sounds {
     val LORE_ANNOUNCEMENT = sound(key("entity.item.pickup"), Source.MASTER, 1f, 1f)
     val RENAME_ITEM = sound(key("block.smithing_table.use"), Source.PLAYER, 1f, 1f)
     val MINT_CURRENCY = sound(key("block.chain.break"), Source.PLAYER, 1f, 1.3f)
+    val DIVINIFY_ITEM = sound(key("block.enchantment_table.use"), Source.PLAYER, 1f, 1f)
     val FRAME_EYE_BREAK = sound(key("entity.ender_eye.death"), Source.BLOCK, 1f, 0.75f)
     val PLING = sound(key("minecraft:block.note_block.pling"), Source.PLAYER, 0.5f, 1f)
     val DIDGERIDOO = sound(key("minecraft:block.note_block.didgeridoo"), Source.PLAYER, 0.5f, 1f)
+    val FISHING_SOCIAL = sound(key("entity.fishing_bobber.splash"), Source.MASTER, 0.5f, 1.5f)
 }
