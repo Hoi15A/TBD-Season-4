@@ -29,6 +29,7 @@ object ItemFrameInteract {
                 val location = itemFrame.location.toBlockLocation().add(0.5, 0.5, 0.5)
                 itemFrame.location.world.spawnParticle(Particle.WAX_ON, location, 10, 0.5, 0.5, 0.5)
                 player.inventory.itemInMainHand.amount = amount - 1
+                event.isCancelled = true
             }
 
             Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE -> {
@@ -44,7 +45,6 @@ object ItemFrameInteract {
                 itemMeta.damage = newDamage
                 player.inventory.itemInMainHand.itemMeta = itemMeta
                 // Break axe if it reaches max damage
-                player.sendMessage(itemMeta.toString())
                 if(itemMeta.damage.toShort() == player.inventory.itemInMainHand.type.maxDurability) {
                     player.inventory.setItemInMainHand(ItemStack(Material.AIR))
                 }
