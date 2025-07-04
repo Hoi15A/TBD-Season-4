@@ -21,5 +21,5 @@ object Keys {
     val PDC_LOCATION_Y = NamespacedKey(plugin, "pdc.type.location_y")!!
     val PDC_LOCATION_Z = NamespacedKey(plugin, "pdc.type.location_z")!!
 
-    val MEMENTO_TYPE = NamespacedKey(plugin, "pdc.type.memento_type")!!
+    val MEMENTO_TYPE = NamespacedKey(plugin, "pdc.type.memento_type")
 }

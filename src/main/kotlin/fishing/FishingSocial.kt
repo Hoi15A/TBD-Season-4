@@ -2,6 +2,8 @@ package fishing
 
 import chat.ChatUtility
 import chat.Formatting
+import item.ItemRarity
+import item.ItemType
 import item.SubRarity
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
@@ -11,6 +13,10 @@ import plugin
 import util.Sounds.FISHING_SOCIAL
 import util.timeRemainingFormatted
 import java.util.*
+import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
+import util.Keys
 
 object FishingSocial {
     private val fishingSocialTasks = mutableMapOf<Int, BukkitRunnable>()
@@ -70,30 +76,27 @@ object FishingSocial {
     }
 
     fun addScore(player: Player, fishRarity: FishRarity, subRarity: SubRarity) {
-        fishingSocialScores.putIfAbsent(player.uniqueId, 0)
-        var score = 0
-        when(fishRarity) {
-            FishRarity.COMMON -> score += 1
-            FishRarity.UNCOMMON -> score += 2
-            FishRarity.RARE -> score += 4
-            FishRarity.EPIC -> score += 6
-            FishRarity.LEGENDARY -> score += 8
-            FishRarity.MYTHIC -> score += 12
-            FishRarity.UNREAL -> score += 20
-            FishRarity.SPECIAL -> {}
-            FishRarity.TRANSCENDENT -> score += 50
-            FishRarity.CELESTIAL -> score += 80
+        var score = fishingSocialScores.getOrDefault(player.uniqueId, 0)
+        score += when(fishRarity) {
+            FishRarity.COMMON -> 1
+            FishRarity.UNCOMMON -> 2
+            FishRarity.RARE -> 4
+            FishRarity.EPIC -> 6
+            FishRarity.LEGENDARY -> 8
+            FishRarity.MYTHIC -> 12
+            FishRarity.UNREAL -> 20
+            FishRarity.SPECIAL -> 0
+            FishRarity.TRANSCENDENT -> 50
+            FishRarity.CELESTIAL -> 80
         }
-        when(subRarity) {
-            SubRarity.NONE -> {}
-            SubRarity.SHINY -> score += 25
-            SubRarity.SHADOW -> score += 50
-            SubRarity.OBFUSCATED -> score += 75
+        score += when(subRarity) {
+            SubRarity.NONE -> 0
+            SubRarity.SHINY -> 25
+            SubRarity.SHADOW -> 50
+            SubRarity.OBFUSCATED -> 75
         }
-        val currentScore = fishingSocialScores[player.uniqueId]!!
-        val newScore = currentScore + score
         fishingSocialScores.remove(player.uniqueId)
-        fishingSocialScores[player.uniqueId] = newScore
+        fishingSocialScores[player.uniqueId] = score
     }
 
     fun scoreBreakdown() {
@@ -102,7 +105,10 @@ object FishingSocial {
         sortedScores.forEach { (uuid, score) ->
             if(i == 1) {
                 ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<gradient:dark_aqua:aqua:dark_aqua><b>FISHING SOCIAL<reset>: <b><yellow>${Bukkit.getPlayer(uuid)?.name}!<newline>", false)
-                Bukkit.getPlayer(uuid)?.let { Fishing.mythicEffect(it.location) }
+                Bukkit.getPlayer(uuid)?.let {
+                    giveFishingMemento(it, score)
+                    Fishing.mythicEffect(it.location)
+                }
                 ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<gradient:dark_aqua:aqua:dark_aqua><b>SCORE BREAKDOWN<reset>:", false)
             }
             ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "$i. <tbdcolour>${Bukkit.getOfflinePlayer(uuid).name}</tbdcolour> earned <yellow>$score</yellow> point${if(score <= 1) "" else "s"}.", false)
@@ -118,5 +124,24 @@ object FishingSocial {
 
     fun isActive(): Boolean {
         return fishingSocialTasks.isNotEmpty()
+    }
+
+    fun giveFishingMemento(player: Player, score: Int) {
+        val itemStack = ItemStack(Material.TROPICAL_FISH)
+        val itemMeta = itemStack.itemMeta
+        val lore = listOf(
+            "<!i><white>${ItemRarity.EPIC.rarityGlyph}${ItemType.MEMENTO.typeGlyph}",
+            "<!i><yellow>You feel pride running through your veins.",
+            "",
+            "<!i><gray>Obtained by winning a fishing social event.",
+            "<!i><gray>Player: <white>${player.name}",
+            "<!i><gray>Score: <white>$score",
+        ).map { Formatting.allTags.deserialize(it) }
+        itemMeta.lore(lore)
+        itemMeta.displayName(Formatting.allTags.deserialize("<!i><rainbow>Pride Fish"))
+        itemMeta.persistentDataContainer.set(Keys.MEMENTO_TYPE, PersistentDataType.STRING, "fishing_social")
+        itemMeta.setEnchantmentGlintOverride(true)
+        itemStack.setItemMeta(itemMeta)
+        player.inventory.addItem(itemStack)
     }
 }
