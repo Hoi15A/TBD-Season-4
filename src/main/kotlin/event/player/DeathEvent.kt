@@ -3,17 +3,15 @@ package event.player
 import chat.Formatting
 import logger
 import lore.Divinity
-
 import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.text.TranslationArgument
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText
-
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffectType
 import util.Keys.DIVINITY_CHAINS
-
 import kotlin.random.Random
 
 class DeathEvent: Listener {
@@ -25,10 +23,13 @@ class DeathEvent: Listener {
                 Divinity.chainPlayer(e.player)
                 e.player.health = 20.0
                 e.isCancelled = true
+                return
             }
         }
         if(Divinity.chainedPlayers.containsKey(e.player)) {
+            e.deathMessage(null)
             e.isCancelled = true
+            return
         }
 
         if (e.player.isInvisible || e.player.killer?.isInvisible == true)
@@ -49,7 +50,11 @@ class DeathEvent: Listener {
             }
         }
         if(e.player.killer?.name == "Byrtrum") {
-            e.deathMessage(Formatting.allTags.deserialize(Formatting.DIVINE_DEATH_MESSAGES.random().replace("%s", e.player.name)))
+            if(e.player.killer?.hasPotionEffect(PotionEffectType.INVISIBILITY) == true) {
+                e.deathMessage(Formatting.allTags.deserialize(Formatting.DIVINATED_DEATH_MESSAGES.random().replace("%s", e.player.name)))
+            } else {
+                e.deathMessage(Formatting.allTags.deserialize(Formatting.DIVINE_DEATH_MESSAGES.random().replace("%s", e.player.name)))
+            }
             return
         }
         val newComponent = component.arguments(newArgs)
