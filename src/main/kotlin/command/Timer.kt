@@ -23,7 +23,7 @@ class Timer {
     @Command("timer start <time> [countdown]")
     @Permission("tbd.command.timer")
     fun timerStart(css: CommandSourceStack, @Argument("time") time: Int, @Argument("countdown") @Default("-1") countdown: Int) {
-        if(time in 1..120) {
+        if(time in 1..60) {
             if(css.sender is Player) {
                 val player = css.sender as Player
                 ChatUtility.broadcastDev("Timer <dark_gray>(${time.timeRemainingFormatted()})</dark_gray> started by ${player.name}.", false)
@@ -40,15 +40,17 @@ object TimerFunction {
                 var timeInSeconds = timeInMinutes * 60
                 val timeInSecondsTotal = timeInSeconds
                 val timerBossBar = BossBar.bossBar(Component.text("Timer"), 0F, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS);
+                var countdownUpwards = 0
 
                 override fun run() {
                     if(countdownTime >= 0) {
                         timerBossBar.name(Formatting.allTags.deserialize("<b>TIMER<reset><gray> - <reset>Start in: ${countdownTime}s<gray>"))
-                        timerBossBar.progress(countdownTime.toFloat() / countdown.toFloat())
+                        timerBossBar.progress(countdownUpwards.toFloat() / countdown.toFloat())
                         for(player in Bukkit.getOnlinePlayers()) {
                             player.showBossBar(timerBossBar)
                         }
                         countdownTime--
+                        countdownUpwards++
                     }
                     if(countdownTime <= -1) {
                         timerBossBar.name(Formatting.allTags.deserialize("<b>TIMER<reset><gray> - <reset>Time: ${timeInSeconds / 60 % 60}m ${timeInSeconds % 60}s<gray>"))
