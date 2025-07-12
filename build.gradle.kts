@@ -24,14 +24,18 @@ plugins {
 
 group = "net.tbdsmp"
 version = "Build-$commitHash"
-description = "The future is now!"
+description = "Chicken Jockey!!!!"
 
 bukkitPluginYaml {
     main = "SeasonFourPlugin"
     load = BukkitPluginYaml.PluginLoadOrder.STARTUP
-    authors.add("Austin Albrecht")
-    authors.add("Byrt")
-    apiVersion = "1.21.5"
+    authors = listOf(
+        "Austin Albrecht",
+        "Byrt",
+        "derNiklaas",
+        "Sebiann"
+    )
+    apiVersion = "1.21.7"
 }
 
 kotlin {
@@ -50,7 +54,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    paperweight.paperDevBundle("1.21.5-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.7-R0.1-SNAPSHOT")
 
     implementation("org.incendo:cloud-paper:2.0.0-beta.10")
     implementation("org.incendo:cloud-annotations:2.0.0")
