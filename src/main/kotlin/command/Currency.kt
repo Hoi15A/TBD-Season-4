@@ -12,7 +12,7 @@ import org.incendo.cloud.annotations.CommandDescription
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
 import util.Keys.CURRENCY_HASH
-import util.Sounds.DIDGERIDOO
+import util.Sounds.ERROR_DIDGERIDOO
 import util.Sounds.MINT_CURRENCY
 import util.Sounds.PLING
 import util.isHoldingItemInMainHand
@@ -108,7 +108,7 @@ class Currency {
             player.playSound(PLING)
         } else {
             player.sendMessage(Formatting.allTags.deserialize("<tbdcolour>The currency <red>DOES NOT MATCH <tbdcolour>the given secret."))
-            player.playSound(DIDGERIDOO)
+            player.playSound(ERROR_DIDGERIDOO)
         }
     }
 

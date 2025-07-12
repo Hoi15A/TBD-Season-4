@@ -36,6 +36,6 @@ object Sounds {
     val DIVINIFICATION_BEAM_EXTINGUISH = sound(key("block.fire.extinguish"), Source.MASTER, 10f, 0f)
     val FRAME_EYE_BREAK = sound(key("entity.ender_eye.death"), Source.BLOCK, 1f, 0.75f)
     val PLING = sound(key("minecraft:block.note_block.pling"), Source.PLAYER, 0.5f, 1f)
-    val DIDGERIDOO = sound(key("minecraft:block.note_block.didgeridoo"), Source.PLAYER, 0.5f, 1f)
+    val ERROR_DIDGERIDOO = sound(key("minecraft:block.note_block.didgeridoo"), Source.PLAYER, 0.5f, 1f)
     val FISHING_SOCIAL = sound(key("entity.fishing_bobber.splash"), Source.MASTER, 0.5f, 1.5f)
 }
