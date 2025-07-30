@@ -29,7 +29,7 @@ class RenameItem {
             return
         }
 
-        if (!hasLapisInInventory(player)) {
+        if (!hasLapisInInventory(player) && player.gameMode !== org.bukkit.GameMode.CREATIVE) {
             player.sendMessage(Formatting.allTags.deserialize("<red>You need 1 lapis in your inventory to rename."))
             return
         }
@@ -45,6 +45,30 @@ class RenameItem {
         itemMeta.displayName(nameComponent)
         player.inventory.itemInMainHand.setItemMeta(itemMeta)
         player.sendMessage(Formatting.allTags.deserialize("<tbdcolour>Renamed item!"))
+        player.playSound(RENAME_ITEM)
+    }
+
+    @Command("resetitemname")
+    @CommandDescription("Resets the item's name to default.")
+    @Permission("tbd.command.resetitemname")
+    fun resetItemName(css: CommandSourceStack) {
+        val player = css.sender as? Player ?: return
+
+        if (!player.isHoldingItemInMainHand()) {
+            player.sendMessage(Formatting.allTags.deserialize("<red>You need to be holding an item to reset its name."))
+            return
+        }
+
+        val itemMeta = player.inventory.itemInMainHand.itemMeta
+
+        if (!itemMeta.hasDisplayName()) {
+            player.sendMessage(Formatting.allTags.deserialize("<yellow>This item doesn't have a custom name."))
+            return
+        }
+
+        itemMeta.displayName(null) // This resets the name to default
+        player.inventory.itemInMainHand.setItemMeta(itemMeta)
+        player.sendMessage(Formatting.allTags.deserialize("<tbdcolour>Reset item name!"))
         player.playSound(RENAME_ITEM)
     }
 
