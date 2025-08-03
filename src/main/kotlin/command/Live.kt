@@ -1,6 +1,7 @@
 package command
 
 import chat.ChatUtility
+import chat.Formatting
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
@@ -10,6 +11,7 @@ import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.CommandDescription
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
+import java.util.UUID
 
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
@@ -21,16 +23,16 @@ class Live {
         val player = css.sender as? Player ?: return
         if (LiveUtil.isLive(player)) {
             LiveUtil.stopLive(player)
-            ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} stopped streaming", false)
+            Bukkit.getServer().sendMessage(Formatting.allTags.deserialize("<tbdcolour>${player.name} stopped streaming"))
         } else {
             LiveUtil.startLive(player)
-            ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} went live", false)
+            Bukkit.getServer().sendMessage(Formatting.allTags.deserialize("<tbdcolour>${player.name} went live"))
         }
     }
 }
 
 object LiveUtil {
-    val livePlayers = mutableSetOf<java.util.UUID>()
+    val livePlayers = mutableSetOf<UUID>()
 
     fun isLive(player: Player): Boolean {
         return livePlayers.contains(player.uniqueId)
