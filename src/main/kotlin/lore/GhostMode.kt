@@ -1,5 +1,6 @@
 package lore
 
+import chat.Formatting
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
@@ -15,17 +16,22 @@ object GhostMode {
     fun toggleGhostMode(player: Player) {
         if(player in ghostPlayers) {
             ghostPlayers.remove(player)
-            player.isInvisible = false
+            player.sendMessage(Formatting.allTags.deserialize("<dark_gray><i>You are now visible"))
         } else {
             ghostPlayers.add(player)
             ghostModeTask(player)
+            player.sendMessage(Formatting.allTags.deserialize("<dark_gray><i>You are now intangible"))
         }
     }
 
     private fun ghostModeTask(player: Player) {
         object : BukkitRunnable() {
             override fun run() {
-                if(ghostPlayers.contains(player) && player.isOnline) {
+                if(!player.isOnline) {
+                    toggleGhostMode(player)
+                    cancel()
+                }
+                if(ghostPlayers.contains(player)) {
                     for (viewer in Bukkit.getOnlinePlayers()) {
                         if (viewer != player) {
                             if(player.world == viewer.world) {
@@ -48,10 +54,15 @@ object GhostMode {
                         }
                     }
                 } else {
-                    toggleGhostMode(player)
+                    for (viewer in Bukkit.getOnlinePlayers()) {
+                        if (viewer != player) {
+                            if(player.world == viewer.world) {
+                                viewer.showPlayer(plugin, player)
+                            }
+                        }
+                    }
                     cancel()
                 }
-
             }
         }.runTaskTimer(plugin, 0L, 2L)
     }

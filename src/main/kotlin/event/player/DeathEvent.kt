@@ -21,6 +21,7 @@ class DeathEvent: Listener {
             val killer = e.player.killer!!
             if(killer.inventory.itemInMainHand.persistentDataContainer.get(DIVINITY_CHAINS, PersistentDataType.BOOLEAN) == true) {
                 Divinity.chainPlayer(e.player)
+                e.deathMessage(null)
                 e.player.health = 20.0
                 e.isCancelled = true
                 return

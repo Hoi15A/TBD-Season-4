@@ -36,10 +36,10 @@ class Message {
             val sender = css.sender as Player
             if (sender == recipient) {
                 System.currentTimeMillis() / 1000
-                sender.sendMessage(Formatting.allTags.deserialize("<i><tbdcolour>You<white> -> <yellow>Yourself</yellow>: ${Formatting.allTags.stripTags(text.joinToString(" "))}</i>"))
+                sender.sendMessage(Formatting.restrictedTags.deserialize("<i><tbdcolour>You<white> -> <yellow>Yourself</yellow>: ${text.joinToString(" ")}</i>"))
             } else {
                 if(recipient.name == "Byrtrum") {
-                    sender.sendMessage(Formatting.allTags.deserialize("<i><tbdcolour>You<white> -> <yellow><obf>********</obf></yellow>: <dark_gray>Yo<obf>u</obf>r m<obf>e</obf>ssage w<obf>a</obf>s lo<obf>s</obf>t...</i>"))
+                    sender.sendMessage(Formatting.restrictedTags.deserialize("<i><tbdcolour>You<white> -> <yellow><obf>********</obf></yellow>: <dark_gray>Yo<obf>u</obf>r m<obf>e</obf>ssage w<obf>a</obf>s lo<obf>s</obf>t...</i>"))
                     sender.playSound(Sounds.ENDER_EYE_PLACE_FAIL_BACKGROUND)
                 } else {
                     sendMessage(sender, recipient, text)
@@ -68,12 +68,12 @@ class Message {
                     sendMessage(sender, offlinePlayer.player!!, text)
                 } else {
                     sender.sendMessage(
-                        Formatting.allTags.deserialize("<i><gray>${offlinePlayer.name} is not online :pensive:</gray></i>")
+                        Formatting.restrictedTags.deserialize("<i><gray>${offlinePlayer.name} is not online :pensive:</gray></i>")
                     )
                 }
             } else {
                 sender.sendMessage(
-                    Formatting.allTags.deserialize("<i><gray>Nobody has messaged you in a while, but don't worry we still love you <3 - TBD Admins</gray></i>")
+                    Formatting.restrictedTags.deserialize("<i><gray>Nobody has messaged you in a while, but don't worry we still love you <3 - TBD Admins</gray></i>")
                 )
             }
         }
@@ -89,14 +89,14 @@ class Message {
      * @param text
      */
     private fun sendMessage(sender: Player, recipient: Player, text: Array<String>) {
-        val message = Formatting.allTags.stripTags(text.joinToString(" "))
+        val message = text.joinToString(" ")
 
         if(sender.name == "Byrtrum") {
-            sender.sendMessage(Formatting.allTags.deserialize("<i><tbdcolour>You</tbdcolour> -> <yellow><obf>${recipient.name}</obf></yellow>: $message</i>"))
-            recipient.sendMessage(Formatting.allTags.deserialize("<i><yellow><obf>${sender.name}</obf></yellow> -> <tbdcolour>You</tbdcolour>: $message</i>"))
+            sender.sendMessage(Formatting.restrictedTags.deserialize("<i><tbdcolour>You</tbdcolour> -> <yellow>${recipient.name}</yellow>: $message</i>"))
+            recipient.sendMessage(Formatting.restrictedTags.deserialize("<i><yellow><obf>${sender.name}</obf></yellow> -> <tbdcolour>You</tbdcolour>: $message</i>"))
         } else {
-            sender.sendMessage(Formatting.allTags.deserialize("<i><tbdcolour>You</tbdcolour> -> <yellow>${recipient.name}</yellow>: $message</i>"))
-            recipient.sendMessage(Formatting.allTags.deserialize("<i><yellow>${sender.name}</yellow> -> <tbdcolour>You</tbdcolour>: $message</i>"))
+            sender.sendMessage(Formatting.restrictedTags.deserialize("<i><tbdcolour>You</tbdcolour> -> <yellow>${recipient.name}</yellow>: $message</i>"))
+            recipient.sendMessage(Formatting.restrictedTags.deserialize("<i><yellow>${sender.name}</yellow> -> <tbdcolour>You</tbdcolour>: $message</i>"))
         }
 
         lastConversationPartner[recipient.uniqueId] = LastMessager(sender.uniqueId, System.currentTimeMillis())
