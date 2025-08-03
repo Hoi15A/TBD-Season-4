@@ -18,15 +18,13 @@ class Live {
     @CommandDescription("Toggle Streamer mode.")
     @Permission("tbd.command.streamermode")
     fun live(css: CommandSourceStack) {
-        if(css.sender is Player) {
-            val player = css.sender as Player
-            if (LiveUtil.isLive(player)) {
-                LiveUtil.stopLive(player)
-                ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} stopped streaming", false)
-            } else {
-                LiveUtil.startLive(player)
-                ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} went live", false)
-            }
+        val player = css.sender as? Player ?: return
+        if (LiveUtil.isLive(player)) {
+            LiveUtil.stopLive(player)
+            ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} stopped streaming", false)
+        } else {
+            LiveUtil.startLive(player)
+            ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} went live", false)
         }
     }
 }
