@@ -73,7 +73,7 @@ object GlobalRenderer : ChatRenderer {
         val playerHead = Noxesium.buildSkullComponent(source.uniqueId, false, 0, 0, 1.0f)
         val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
         return playerHead
-            .append(allTags.deserialize("${if(LiveUtil.livePlayers[source] == true) "<prefix:live> " else ""}<tbdcolour>${if(source.name == "Byrtrum") "<obfuscated>${source.name}" else source.name}<reset>: ")
+            .append(allTags.deserialize("${if(LiveUtil.livePlayers.contains(source.uniqueId)) "<prefix:live> " else ""}<tbdcolour>${if(source.name == "Byrtrum") "<obfuscated>${source.name}" else source.name}<reset>: ")
                 .append(if(source.hasPermission("tbd.group.admin")) allTags.deserialize(plainMessage) else restrictedTags.deserialize(plainMessage)))
     }
 }

@@ -18,22 +18,38 @@ class Live {
     @CommandDescription("Toggle Streamer mode.")
     @Permission("tbd.command.streamermode")
     fun live(css: CommandSourceStack) {
-        val player = css.sender as Player
-        if (LiveUtil.livePlayers.containsKey(player)) {
-            LiveUtil.livePlayers.remove(player)
-            player.displayName(null);
-            player.playerListName(null);
-            player.sendMessage("Live mode disabled.")
-        } else {
-            LiveUtil.livePlayers[player] = true
-            ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} went Live", false)
-            val newName = player.displayName().color(LIGHT_PURPLE)
-            player.displayName(newName);
-            player.playerListName(newName);
-            player.sendMessage("Live mode enabled.")
+        if(css.sender is Player) {
+            val player = css.sender as Player
+            if (LiveUtil.isLive(player)) {
+                LiveUtil.stopLive(player)
+                ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} stopped streaming", false)
+            } else {
+                LiveUtil.startLive(player)
+                ChatUtility.messageAudience(Audience.audience(Bukkit.getOnlinePlayers()), "<tbdcolour>${player.name} went live", false)
+            }
         }
     }
 }
+
 object LiveUtil {
-    val livePlayers = mutableMapOf<Player, Boolean>()
+    val livePlayers = mutableSetOf<java.util.UUID>()
+
+    fun isLive(player: Player): Boolean {
+        return livePlayers.contains(player.uniqueId)
+    }
+
+    fun startLive(player: Player) {
+        livePlayers.add(player.uniqueId)
+        val newName = player.displayName().color(LIGHT_PURPLE)
+        player.displayName(newName)
+        player.playerListName(newName)
+        player.sendMessage("Live mode enabled.")
+    }
+
+    fun stopLive(player: Player) {
+        livePlayers.remove(player.uniqueId)
+        player.displayName(null)
+        player.playerListName(null)
+        player.sendMessage("Live mode disabled.")
+    }
 }

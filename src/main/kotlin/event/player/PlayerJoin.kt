@@ -3,6 +3,7 @@ package event.player
 import Config
 import ResourcePack
 import chat.Formatting
+import command.LiveUtil
 import logger
 import lore.GhostMode
 import net.kyori.adventure.audience.Audience
@@ -17,6 +18,7 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+
 
 class PlayerJoin : Listener {
     private val mm = MiniMessage.miniMessage()
@@ -44,6 +46,9 @@ class PlayerJoin : Listener {
             e.joinMessage(Formatting.allTags.deserialize("<dark_gray>[<green>+<dark_gray>] <tbdcolour>${e.player.name}<reset> joined the game."))
         }
 
+        if(LiveUtil.isLive(e.player)) {
+            LiveUtil.startLive(e.player)
+        }
     }
 
     private fun sendTabList(audience: Audience) {
