@@ -23,10 +23,10 @@ class Live {
         val player = css.sender as? Player ?: return
         if (LiveUtil.isLive(player)) {
             LiveUtil.stopLive(player)
-            Bukkit.getServer().sendMessage(Formatting.allTags.deserialize("<tbdcolour>${player.name} stopped streaming"))
+            Bukkit.getServer().sendMessage(Formatting.allTags.deserialize("<tbdcolour>${player.name}</tbdcolour> stopped streaming"))
         } else {
             LiveUtil.startLive(player)
-            Bukkit.getServer().sendMessage(Formatting.allTags.deserialize("<tbdcolour>${player.name} went live"))
+            Bukkit.getServer().sendMessage(Formatting.allTags.deserialize("<tbdcolour>${player.name}</tbdcolour> went live"))
         }
     }
 }
