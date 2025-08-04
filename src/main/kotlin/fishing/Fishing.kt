@@ -715,10 +715,15 @@ object Fishing {
     }
 
     fun ItemStack.hasSubRarity(): Boolean {
-        val isShiny = persistentDataContainer.get(FISH_IS_SHINY, PersistentDataType.BOOLEAN) ?: false
-        val isShadow = persistentDataContainer.get(FISH_IS_SHADOW, PersistentDataType.BOOLEAN) ?: false
-        val isObfuscated = persistentDataContainer.get(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN) ?: false
+        return getSubRarity() != SubRarity.NONE
+    }
 
-        return isShiny || isShadow || isObfuscated
+    fun ItemStack.getSubRarity(): SubRarity {
+        return when {
+            persistentDataContainer.get(FISH_IS_SHINY, PersistentDataType.BOOLEAN) == true -> SubRarity.SHINY
+            persistentDataContainer.get(FISH_IS_SHADOW, PersistentDataType.BOOLEAN) == true -> SubRarity.SHADOW
+            persistentDataContainer.get(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN) == true -> SubRarity.OBFUSCATED
+            else -> SubRarity.NONE
+        }
     }
 }
