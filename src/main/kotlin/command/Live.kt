@@ -5,6 +5,7 @@ import chat.Formatting
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Command
@@ -40,7 +41,8 @@ object LiveUtil {
 
     fun startLive(player: Player) {
         livePlayers.add(player.uniqueId)
-        val newName = player.displayName().color(LIGHT_PURPLE)
+        val newName = Formatting.allTags.deserialize("\uF017 ")
+            .append(player.displayName().color(TextColor.color(255, 156, 237)))
         player.displayName(newName)
         player.playerListName(newName)
         player.sendMessage("Live mode enabled.")
