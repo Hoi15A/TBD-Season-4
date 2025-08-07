@@ -22,4 +22,7 @@ object Keys {
     val PDC_LOCATION_Z = NamespacedKey(plugin, "pdc.type.location_z")!!
 
     val MEMENTO_TYPE = NamespacedKey(plugin, "pdc.type.memento_type")
+
+    val GENERIC_RARITY = NamespacedKey(plugin, "item.rarity")
+    val GENERIC_SUB_RARITY = NamespacedKey(plugin, "item.rarity.sub_rarity")
 }
