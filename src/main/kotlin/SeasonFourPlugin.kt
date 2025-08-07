@@ -2,6 +2,7 @@ import chat.VisualChat
 import com.noxcrew.interfaces.InterfacesListeners
 import event.DamageEvent
 import event.FurnaceSmelt
+import event.PrepareAnvilListener
 import event.ServerLinks
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -55,6 +56,7 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(EnderEyeInteract(), this)
         server.pluginManager.registerEvents(PlayerItemConsume(), this)
         server.pluginManager.registerEvents(PlayerMovement(), this)
+        server.pluginManager.registerEvents(PrepareAnvilListener(), this)
     }
 
     private fun registerCommands() {
