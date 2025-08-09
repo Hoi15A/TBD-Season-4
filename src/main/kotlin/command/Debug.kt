@@ -4,8 +4,8 @@ import fishing.FishRarity
 import fishing.Fishing
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import item.SubRarity
-import item.TreasureBagType
-import item.TreasureBags
+import item.treasurebag.BagType
+import item.treasurebag.TreasureBag
 import logger
 import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
@@ -66,10 +66,10 @@ class Debug {
 
     @Command("debug treasure_bag <type>")
     @Permission("tbd.command.debug")
-    fun debugTreasureBag(css: CommandSourceStack, @Argument("type") type: TreasureBagType) {
+    fun debugTreasureBag(css: CommandSourceStack, @Argument("type") type: BagType) {
         if(css.sender is Player) {
             val player = css.sender as Player
-            player.inventory.addItem(TreasureBags.getTreasureBag(type))
+            player.inventory.addItem(TreasureBag.create(type))
         }
     }
 }
