@@ -1,5 +1,6 @@
 package command
 
+import chat.Formatting
 import fishing.FishRarity
 import fishing.Fishing
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -8,15 +9,19 @@ import logger
 import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.incendo.cloud.annotations.Argument
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
 import plugin
+import util.Keys
+import util.isHoldingItemInMainHand
 
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
@@ -60,5 +65,30 @@ class Debug {
         for(rarity in SubRarity.entries) {
             logger.info("${rarity.name}: ${catchesSR.filter { r -> r == rarity }.size}")
         }
+    }
+
+    @Command("debug migrateMemento")
+    @Permission("tbd.command.debug")
+    fun migrateMemento(css: CommandSourceStack) {
+        val player = css.sender as Player
+        if(!player.isHoldingItemInMainHand()) {
+            player.sendMessage(Formatting.allTags.deserialize("<red>You need to be holding an item to migrate memento data.</red>"))
+            return
+        }
+
+        val itemStack = player.inventory.itemInMainHand
+        val legacyKey = NamespacedKey(plugin, "pdc.type.memento_type")
+
+        if(!itemStack.persistentDataContainer.has(legacyKey)) {
+            player.sendMessage(Formatting.allTags.deserialize("<red>This item does not have legacy memento data.</red>"))
+            return
+        }
+
+        val value = itemStack.persistentDataContainer.get(legacyKey, PersistentDataType.STRING)!!
+        itemStack.editPersistentDataContainer {
+            it.remove(legacyKey)
+            it.set(Keys.MEMENTO_TYPE, PersistentDataType.STRING, value)
+        }
+        player.sendMessage(Formatting.allTags.deserialize("<green>Memento data migrated successfully!</green>"))
     }
 }
