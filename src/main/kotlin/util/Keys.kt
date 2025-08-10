@@ -9,7 +9,7 @@ object Keys {
      */
     val CURRENCY_HASH = NamespacedKey(plugin, "currency.sha256")
     val ITEM_IS_UNPLACEABLE = NamespacedKey(plugin, "item.unplaceable")
-    val MEMENTO_TYPE = NamespacedKey(plugin, "pdc.type.memento_type") // Not actually a pdc type, inaccurate key name
+    val MEMENTO_TYPE = NamespacedKey(plugin, "item.memento_type")
 
     /**
      * Lore
