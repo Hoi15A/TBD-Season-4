@@ -1,5 +1,6 @@
 import chat.VisualChat
 import com.noxcrew.interfaces.InterfacesListeners
+import event.BlockPlace
 import event.DamageEvent
 import event.FurnaceSmelt
 import event.PrepareAnvilListener
@@ -57,6 +58,7 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerItemConsume(), this)
         server.pluginManager.registerEvents(PlayerMovement(), this)
         server.pluginManager.registerEvents(PrepareAnvilListener(), this)
+        server.pluginManager.registerEvents(BlockPlace(), this)
     }
 
     private fun registerCommands() {

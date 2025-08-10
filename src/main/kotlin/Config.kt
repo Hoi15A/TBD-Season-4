@@ -17,6 +17,13 @@ data class Link(val component: String, val uri: URI, val order: Int)
 @ConfigSerializable
 data class ResourcePack(val uri: URI, val hash: String, val priority: Int)
 
+
+/** TODO: Memory config overhaul
+ * Not part of the configurate model, will cause problems if events that receive the config per parameter from main
+ * want to access it as it does not exist in the model. Also does not use configurate. Should be reworked into a
+ * separate configurate memento config. Also missing default values in the resources default config.
+ * https://github.com/SpongePowered/Configurate/wiki/Object-Mapper
+ */
 object Memory {
     private const val MEMORY_PATH = "memories"
     private val configFile = File(plugin.dataFolder, "config.yml")
