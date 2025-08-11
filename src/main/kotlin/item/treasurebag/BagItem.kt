@@ -1,15 +1,21 @@
 package item.treasurebag
 
 import chat.Formatting.allTags
+import io.papermc.paper.datacomponent.item.Equippable
+import io.papermc.paper.datacomponent.DataComponentTypes
 import item.ItemRarity.*
 import item.ItemType
 import item.SubRarity
 import item.SubRarity.*
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.*
+import org.bukkit.NamespacedKey
+import org.bukkit.inventory.*
+
 import util.Keys.GENERIC_RARITY
 import util.Keys.GENERIC_SUB_RARITY
 import util.Keys.TRUE_EYE
@@ -19,6 +25,7 @@ import util.Keys.TRUE_EYE
  * @param amountRange How many of the item should be rolled
  * @param itemStack The actual itemStack of a single bag item
  */
+@Suppress("unstableApiUsage")
 enum class BagItem(val pctChanceToRoll: Int, val amountRange: IntRange, val itemStack: ItemStack) {
     DRAGON_EGG(100, 1..1,
         ItemStack(Material.DRAGON_EGG)
@@ -50,10 +57,25 @@ enum class BagItem(val pctChanceToRoll: Int, val amountRange: IntRange, val item
             elytraMeta.lore(
                 elytraLore.map { allTags.deserialize(it) }
             )
-            if(subRarity == SHINY) {
-                elytraMeta.setEnchantmentGlintOverride(true)
+            when(subRarity) {
+                SHINY -> {
+                    elytraMeta.setEnchantmentGlintOverride(true)
+                    elytraMeta.itemModel = NamespacedKey("tbdsmp", "elytra_shiny")
+                    val equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(Key.key("tbdsmp:elytra_shiny")).build()
+                    this.setData(DataComponentTypes.EQUIPPABLE, equippable)
+                }
+                SHADOW -> {
+                    elytraMeta.itemModel = NamespacedKey("tbdsmp", "elytra_shadow")
+                    val equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(Key.key("tbdsmp:elytra_shadow")).build()
+                    this.setData(DataComponentTypes.EQUIPPABLE, equippable)
+                }
+                OBFUSCATED -> {
+                    elytraMeta.itemModel = NamespacedKey("tbdsmp", "elytra_obf")
+                    val equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(Key.key("tbdsmp:elytra_obf")).build()
+                    this.setData(DataComponentTypes.EQUIPPABLE, equippable)
+                }
+                else -> {}
             }
-            //TODO: ADD MODEL IDS FOR CUSTOM ELYTRA TEXTURES
             elytraMeta.persistentDataContainer.set(GENERIC_RARITY, STRING, EPIC.rarityName.uppercase())
             elytraMeta.persistentDataContainer.set(GENERIC_SUB_RARITY, STRING, subRarity.name.uppercase())
             this.itemMeta = elytraMeta

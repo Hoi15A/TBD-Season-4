@@ -9,7 +9,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import util.Keys.PLAYER_PLACED_END_PORTAL_FRAMES
 import util.Sounds
-import util.pdc.LocationDataType
+import util.pdc.LocationArrayDataType
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,22 +23,27 @@ class PortalFrameInteract: Listener {
         if (!event.clickedBlock?.world?.persistentDataContainer?.has(PLAYER_PLACED_END_PORTAL_FRAMES)!!) return
 
         val clickedBlock = event.clickedBlock!!
-        val nearbyPortalBlocks = findNearbyPortalBlocks(clickedBlock)
-        if(nearbyPortalBlocks.any { it.type == Material.END_PORTAL }) {
-            nearbyPortalBlocks.forEach {
-                block ->
-                block.type = Material.AIR
+        val placedFrames = clickedBlock.world.persistentDataContainer.get(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType())?.toMutableList() ?: mutableListOf()
+        if (placedFrames.contains(clickedBlock.location)) {
+            val nearbyPortalBlocks = findNearbyPortalBlocks(clickedBlock)
+            if(nearbyPortalBlocks.any { it.type == Material.END_PORTAL }) {
+                nearbyPortalBlocks.forEach {
+                        block ->
+                    block.type = Material.AIR
+                    clickedBlock.type = Material.AIR
+                    placedFrames.remove(block.location)
+                    clickedBlock.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType(), placedFrames.toTypedArray())
+                    block.location.world.playSound(Sounds.FRAME_EYE_BREAK)
+                    block.location.world.playSound(Sounds.FRAME_BREAK)
+                }
+            } else {
+                clickedBlock.location.world.dropItem(clickedBlock.location, BagItem.DRAGON_PORTAL_FRAME.itemStack)
+                clickedBlock.location.world.playSound(Sounds.FRAME_EYE_BREAK)
+                clickedBlock.location.world.playSound(Sounds.FRAME_BREAK)
+                placedFrames.remove(clickedBlock.location)
+                clickedBlock.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType(), placedFrames.toTypedArray())
                 clickedBlock.type = Material.AIR
-                block.world.persistentDataContainer.remove(PLAYER_PLACED_END_PORTAL_FRAMES)
-                block.location.world.playSound(Sounds.FRAME_EYE_BREAK)
-                block.location.world.playSound(Sounds.FRAME_BREAK)
             }
-        } else {
-            clickedBlock.location.world.dropItem(clickedBlock.location, BagItem.DRAGON_PORTAL_FRAME.itemStack)
-            clickedBlock.location.world.playSound(Sounds.FRAME_EYE_BREAK)
-            clickedBlock.location.world.playSound(Sounds.FRAME_BREAK)
-            clickedBlock.world.persistentDataContainer.remove(PLAYER_PLACED_END_PORTAL_FRAMES)
-            clickedBlock.type = Material.AIR
         }
     }
 
@@ -67,7 +72,9 @@ class PortalFrameInteract: Listener {
     @EventHandler
     fun portalFramePlaceEvent(event: BlockPlaceEvent) {
         if (event.itemInHand.asOne() == BagItem.DRAGON_PORTAL_FRAME.itemStack) {
-            event.blockPlaced.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationDataType(), event.blockPlaced.location)
+            val placedFrames = event.blockPlaced.world.persistentDataContainer.get(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType())?.toMutableList() ?: mutableListOf()
+            placedFrames.add(event.blockPlaced.location)
+            event.blockPlaced.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType(), placedFrames.toTypedArray())
         }
     }
 }
