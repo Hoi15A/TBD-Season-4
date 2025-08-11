@@ -47,7 +47,7 @@ class PlayerJoin : Listener {
         }
 
         if(LiveUtil.isLive(e.player)) {
-            LiveUtil.startLive(e.player)
+            e.player.sendMessage("Live mode enabled.")
         }
     }
 

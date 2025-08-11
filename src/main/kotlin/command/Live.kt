@@ -1,17 +1,16 @@
 package command
 
-import chat.ChatUtility
 import chat.Formatting
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.CommandDescription
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
+import plugin
 import java.util.UUID
 
 @Suppress("unused", "unstableApiUsage")
@@ -34,6 +33,7 @@ class Live {
 
 object LiveUtil {
     val livePlayers = mutableSetOf<UUID>()
+    val liveTasks = mutableMapOf<UUID, BukkitRunnable>()
 
     fun isLive(player: Player): Boolean {
         return livePlayers.contains(player.uniqueId)
@@ -41,15 +41,24 @@ object LiveUtil {
 
     fun startLive(player: Player) {
         livePlayers.add(player.uniqueId)
-        val newName = Formatting.allTags.deserialize("\uF017 ")
-            .append(player.displayName().color(TextColor.color(255, 156, 237)))
-        player.displayName(newName)
-        player.playerListName(newName)
         player.sendMessage("Live mode enabled.")
+        val timerRunnable = object : BukkitRunnable() {
+            override fun run() {
+                player.displayName(null)
+                player.playerListName(null)
+                val newName = Formatting.allTags.deserialize("\uF017 ")
+                    .append(player.displayName().color(TextColor.color(255, 156, 237)))
+                player.displayName(newName)
+                player.playerListName(newName)
+            }
+        }
+        timerRunnable.runTaskTimer(plugin, 0L, 20L)
+        liveTasks[player.uniqueId] = timerRunnable
     }
 
     fun stopLive(player: Player) {
         livePlayers.remove(player.uniqueId)
+        liveTasks.remove(player.uniqueId)?.cancel()
         player.displayName(null)
         player.playerListName(null)
         player.sendMessage("Live mode disabled.")
