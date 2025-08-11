@@ -1,8 +1,10 @@
 package event.player
 
 import Config
+import Link
 import ResourcePack
 import chat.Formatting
+import chat.Formatting.allTags
 import command.LiveUtil
 import logger
 import lore.GhostMode
@@ -18,13 +20,17 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import org.bukkit.Bukkit
 
+@Suppress("UnstableApiUsage")
 class PlayerJoin : Listener {
     private val mm = MiniMessage.miniMessage()
     val resourcePacks = mutableListOf<ResourcePackInfo>()
+    val links: List<Link>
 
     constructor(config: Config) {
         loadResourcePacks(config.resourcePacks)
+        links = config.links.sortedBy { it.order }
     }
 
     @EventHandler
@@ -48,6 +54,14 @@ class PlayerJoin : Listener {
         if(LiveUtil.isLive(e.player)) {
             LiveUtil.startLive(e.player)
         }
+
+        val playerLinks = Bukkit.getServerLinks()
+
+        links.forEach {
+            playerLinks.addLink(allTags.deserialize(it.component), it.uri)
+        }
+
+        e.player.sendLinks(playerLinks)
     }
 
     private fun sendTabList(audience: Audience) {

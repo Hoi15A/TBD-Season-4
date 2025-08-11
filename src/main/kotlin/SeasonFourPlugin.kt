@@ -4,7 +4,6 @@ import event.block.BlockPlace
 import event.entity.DamageEvent
 import event.block.FurnaceSmelt
 import event.block.PrepareAnvilListener
-import event.util.ServerLinks
 import event.block.PortalFrameInteract
 import event.entity.DragonDeathEvent
 import event.entity.EnderEyeInteract
@@ -47,7 +46,6 @@ class SeasonFourPlugin : JavaPlugin() {
     }
 
     private fun setupEvents() {
-        server.pluginManager.registerEvents(ServerLinks(config), this)
         server.pluginManager.registerEvents(PlayerFish(), this)
         server.pluginManager.registerEvents(PlayerJoin(config), this)
         server.pluginManager.registerEvents(PlayerQuit(), this)
