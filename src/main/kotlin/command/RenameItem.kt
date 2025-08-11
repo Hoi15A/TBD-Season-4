@@ -12,6 +12,7 @@ import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.CommandDescription
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
+import util.Keys
 import util.isHoldingItemInMainHand
 
 @Suppress("unused", "unstableApiUsage")
@@ -26,6 +27,11 @@ class RenameItem {
 
         if (!player.isHoldingItemInMainHand()) {
             player.sendMessage(Formatting.allTags.deserialize("<red>You need to be holding an item to rename."))
+            return
+        }
+
+        if (hasBlockedTags(player.inventory.itemInMainHand)) {
+            player.sendMessage(Formatting.allTags.deserialize("<red>You can't change the name of this item."))
             return
         }
 
@@ -59,6 +65,11 @@ class RenameItem {
             return
         }
 
+        if (hasBlockedTags(player.inventory.itemInMainHand)) {
+            player.sendMessage(Formatting.allTags.deserialize("<red>You can't reset the name of this item."))
+            return
+        }
+
         val itemMeta = player.inventory.itemInMainHand.itemMeta
 
         if (!itemMeta.hasDisplayName()) {
@@ -75,4 +86,18 @@ class RenameItem {
     fun hasLapisInInventory(player: Player): Boolean {
         return player.inventory.contains(LAPIS_LAZULI, 1)
     }
+
+    /**
+     * Checks if the item has any tags that should block renaming the item.
+     * This includes:
+     * - Memento items
+     * - True Eye items
+     * - Divinity Chains
+     * - Currency items
+     */
+    fun hasBlockedTags(item: ItemStack): Boolean =
+        item.persistentDataContainer.has(Keys.MEMENTO_TYPE)
+                || item.persistentDataContainer.has(Keys.TRUE_EYE)
+                || item.persistentDataContainer.has(Keys.DIVINITY_CHAINS)
+                || item.persistentDataContainer.has(Keys.CURRENCY_HASH)
 }

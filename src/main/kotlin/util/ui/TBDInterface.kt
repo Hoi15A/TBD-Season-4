@@ -25,15 +25,14 @@ class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
         when(interfaceType) {
             TBDInterfaceType.MEMORY_ARCHIVE -> {
                 runBlocking {
-                    val memoryInterface = createMemoryInterface(player, interfaceType)
-                    memoryInterface.open(player)
+                    createMemoryInterface(player, interfaceType, MemoryFilter.SEASON_FOUR)
                 }
             }
         }
     }
 
-    private fun createMemoryInterface(player: Player, interfaceType: TBDInterfaceType) = buildChestInterface {
-        val memories = Memory.getMemories()
+    private suspend fun createMemoryInterface(player: Player, interfaceType: TBDInterfaceType, interfaceFilter: MemoryFilter) = buildChestInterface {
+        val memories = if(interfaceFilter != MemoryFilter.SEASON_THREE) Memory.getMemories(interfaceFilter).sortedBy { it.type.name } else Memory.getMemories(interfaceFilter)
         titleSupplier = { Formatting.allTags.deserialize("<!i><b><tbdcolour><shadow:#0>${interfaceType.interfaceName}") }
         rows = 6
         /** Apply pagination transform **/
@@ -48,11 +47,38 @@ class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
                 Formatting.allTags.deserialize("<!i><white>from the current season."),
                 Formatting.allTags.deserialize("<!i><white>"),
                 Formatting.allTags.deserialize("<!i><#d64304><prefix:warning> <#f26427>Info:"),
-                Formatting.allTags.deserialize("<!i><#f26427>• New applicable items are added automatically."),
-                Formatting.allTags.deserialize("<!i><#f26427>• Use</#f26427> <tbdcolour>/memory save</tbdcolour> <#f26427>to save older applicable items.")
+                Formatting.allTags.deserialize("<!i><dark_gray>•<#f26427> New applicable items are added automatically."),
+                Formatting.allTags.deserialize("<!i><dark_gray>•<#f26427> Use</#f26427> <tbdcolour>/memory save</tbdcolour> <#f26427>to save older applicable items.")
             ))
             infoMenuItem.itemMeta = infoMenuItemMeta
             pane[0,4] = StaticElement(Drawable.Companion.drawable(infoMenuItem))
+        }
+        /** Add filter control **/
+        withTransform { pane, _ ->
+            val filterMenuItem = ItemStack(Material.DETECTOR_RAIL)
+            val filterMenuItemMeta = filterMenuItem.itemMeta
+            filterMenuItemMeta.displayName(Formatting.allTags.deserialize("<!i><tbdcolour>Memory Filter"))
+            val filterItemLore = mutableListOf(
+                Formatting.allTags.deserialize("<!i><gray>Changes what items are shown depending"),
+                Formatting.allTags.deserialize("<!i><gray>on which filter is selected. Defaults"),
+                Formatting.allTags.deserialize("<!i><gray>to the current season."),
+                Formatting.allTags.deserialize("<!i>"),
+                Formatting.allTags.deserialize("<!i><gray>Current Filter:")
+            )
+            for(filterType in MemoryFilter.entries) {
+                filterItemLore.add(Formatting.allTags.deserialize("<!i><dark_gray>• ${if(filterType == interfaceFilter) "<tbdcolour>> " else "<dark_gray>"}${filterType.memoryFilterName}"))
+            }
+            filterMenuItemMeta.lore(filterItemLore)
+            filterMenuItem.itemMeta = filterMenuItemMeta
+            pane[5,3] = StaticElement(Drawable.Companion.drawable(filterMenuItem)) {
+                player.playSound(INTERFACE_INTERACT)
+                when(interfaceFilter) {
+                    MemoryFilter.SEASON_ONE -> newMemoryInterface(player, TBDInterfaceType.MEMORY_ARCHIVE, MemoryFilter.SEASON_TWO)
+                    MemoryFilter.SEASON_TWO -> newMemoryInterface(player, TBDInterfaceType.MEMORY_ARCHIVE, MemoryFilter.SEASON_THREE)
+                    MemoryFilter.SEASON_THREE -> newMemoryInterface(player, TBDInterfaceType.MEMORY_ARCHIVE, MemoryFilter.SEASON_FOUR)
+                    MemoryFilter.SEASON_FOUR -> newMemoryInterface(player, TBDInterfaceType.MEMORY_ARCHIVE, MemoryFilter.SEASON_ONE)
+                }
+            }
         }
         /** Add close menu button **/
         withTransform { pane, _ ->
@@ -95,6 +121,12 @@ class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
                 }
             }
         }
+    }.open(player)
+
+    private fun newMemoryInterface(player: Player, interfaceType: TBDInterfaceType, interfaceFilter: MemoryFilter) {
+        runBlocking {
+            createMemoryInterface(player, interfaceType, interfaceFilter)
+        }
     }
 }
 
@@ -133,4 +165,11 @@ class PaginatedMemoryMenu(items: List<ItemStack>): PaginationTransformation<Pane
 
 enum class TBDInterfaceType(val interfaceName: String) {
     MEMORY_ARCHIVE("TBD SMP Memory Archive")
+}
+
+enum class MemoryFilter(val memoryFilterName: String, val memoryFilterConfigSuffix: String) {
+    SEASON_ONE("Season 1", ".season_one"),
+    SEASON_TWO("Season 2", ".season_two"),
+    SEASON_THREE("Season 3", ".season_three"),
+    SEASON_FOUR("Season 4", ".season_four")
 }

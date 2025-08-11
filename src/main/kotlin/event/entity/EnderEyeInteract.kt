@@ -28,6 +28,7 @@ import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import util.Keys
+import util.ui.MemoryFilter
 
 class EnderEyeInteract: Listener {
     @EventHandler
@@ -124,6 +125,6 @@ class EnderEyeInteract: Listener {
         mementoMeta.persistentDataContainer.set(Keys.MEMENTO_TYPE, PersistentDataType.STRING, "true_eye_memento")
         memento.itemMeta = mementoMeta
         player.inventory.addItem(memento)
-        Memory.saveMemory(memento)
+        Memory.saveMemory(memento, MemoryFilter.SEASON_FOUR)
     }
 }

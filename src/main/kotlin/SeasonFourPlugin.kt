@@ -1,7 +1,9 @@
 import chat.VisualChat
 import com.noxcrew.interfaces.InterfacesListeners
+import event.BlockPlace
 import event.DamageEvent
 import event.block.FurnaceSmelt
+import event.PrepareAnvilListener
 import event.ServerLinks
 import event.block.PortalFrameInteract
 import event.entity.DragonDeathEvent
@@ -60,6 +62,8 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerMovement(), this)
         server.pluginManager.registerEvents(PortalFrameInteract(), this)
         server.pluginManager.registerEvents(DragonDeathEvent(), this)
+        server.pluginManager.registerEvents(PrepareAnvilListener(), this)
+        server.pluginManager.registerEvents(BlockPlace(), this)
     }
 
     private fun registerCommands() {
@@ -95,8 +99,6 @@ class SeasonFourPlugin : JavaPlugin() {
         val node = loader.load()
         config = node.get(Config::class)!!
         logger.info("Loaded configuration.")
-
-        Memory.loadMemories()
     }
 
     private fun registerMessengers() {
