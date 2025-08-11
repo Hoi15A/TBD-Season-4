@@ -26,10 +26,10 @@ import util.Keys.TRUE_EYE
  */
 @Suppress("unstableApiUsage")
 enum class BagItem(val pctChanceToRoll: Int, val amountRange: IntRange, val itemStack: ItemStack) {
-    DRAGON_EGG(100, 1..1,
+    DRAGON_EGG(25, 1..1,
         ItemStack(Material.DRAGON_EGG)
     ),
-    DRAGON_HEAD(50, 1..1,
+    DRAGON_HEAD(10, 1..1,
         ItemStack(Material.DRAGON_HEAD)
     ),
     DRAGON_EYE(100, 1..2,
