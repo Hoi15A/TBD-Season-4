@@ -1,6 +1,6 @@
 package event.player
 
-import event.player.CampfireInteract.campfireInteractEvent
+import event.block.CampfireInteract.campfireInteractEvent
 import lore.Divinity
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Entity

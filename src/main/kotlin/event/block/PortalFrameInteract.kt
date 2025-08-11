@@ -1,7 +1,8 @@
-package event.player
+package event.block
 
 import item.treasurebag.BagItem
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -29,21 +30,22 @@ class PortalFrameInteract: Listener {
             if(nearbyPortalBlocks.any { it.type == Material.END_PORTAL }) {
                 nearbyPortalBlocks.forEach {
                         block ->
+                    if(block.type == Material.END_PORTAL_FRAME) {
+                        placedFrames.remove(block.location)
+                        block.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType(), placedFrames.toTypedArray())
+                        block.location.world.dropItem(block.location.add(0.0, 0.0, 0.0), BagItem.DRAGON_PORTAL_FRAME.itemStack)
+                    }
                     block.type = Material.AIR
-                    clickedBlock.type = Material.AIR
-                    placedFrames.remove(block.location)
-                    clickedBlock.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType(), placedFrames.toTypedArray())
-                    block.location.world.playSound(Sounds.FRAME_EYE_BREAK)
-                    block.location.world.playSound(Sounds.FRAME_BREAK)
+                    block.location.world.spawnParticle(Particle.REVERSE_PORTAL, block.location.add(0.5, 0.5, 0.5), 50, 0.0, 0.0, 0.0, 0.1, null, true)
                 }
-            } else {
-                clickedBlock.location.world.dropItem(clickedBlock.location, BagItem.DRAGON_PORTAL_FRAME.itemStack)
-                clickedBlock.location.world.playSound(Sounds.FRAME_EYE_BREAK)
-                clickedBlock.location.world.playSound(Sounds.FRAME_BREAK)
-                placedFrames.remove(clickedBlock.location)
-                clickedBlock.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType(), placedFrames.toTypedArray())
-                clickedBlock.type = Material.AIR
-            }
+            } else
+            placedFrames.remove(clickedBlock.location)
+            clickedBlock.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType(), placedFrames.toTypedArray())
+            clickedBlock.location.world.dropItem(clickedBlock.location.add(0.5, 0.0, 0.5), BagItem.DRAGON_PORTAL_FRAME.itemStack)
+            clickedBlock.type = Material.AIR
+            clickedBlock.location.world.playSound(Sounds.FRAME_EYE_BREAK)
+            clickedBlock.location.world.playSound(Sounds.FRAME_BREAK)
+            clickedBlock.location.world.spawnParticle(Particle.REVERSE_PORTAL, clickedBlock.location.add(0.5, 0.5, 0.5), 50, 0.0, 0.0, 0.0, 0.1, null, true)
         }
     }
 

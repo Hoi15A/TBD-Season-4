@@ -16,7 +16,7 @@ import org.bukkit.Material
  */
 enum class BagType(val displayName: Component, val loreLines: List<Component>, val bagMaterial: Material, val lootPool: BagLootPool) {
     DRAGON_SCALE(
-        allTags.deserialize("<!i><light_purple>Dragon Scale Treasure Bag"),
+        allTags.deserialize("<!i><gradient:dark_purple:light_purple:dark_purple>Dragon Scale Treasure Bag"),
         listOf(
             allTags.deserialize("<reset><!i><white>${ItemRarity.EPIC.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}"),
             allTags.deserialize("<reset><!i><yellow>A treasure bag dropped from a boss.")

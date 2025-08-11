@@ -1,4 +1,4 @@
-package event.player
+package event.entity
 
 import org.bukkit.Material
 import org.bukkit.Particle

@@ -1,4 +1,4 @@
-package event
+package event.block
 
 import fishing.FishRarity
 import fishing.Fishing.getSubRarity

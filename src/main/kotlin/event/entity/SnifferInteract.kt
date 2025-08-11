@@ -1,4 +1,4 @@
-package event.player
+package event.entity
 
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.entity.Sniffer

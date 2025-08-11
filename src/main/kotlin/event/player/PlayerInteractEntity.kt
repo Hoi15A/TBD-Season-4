@@ -1,7 +1,7 @@
 package event.player
 
-import event.player.ItemFrameInteract.itemFrameInteractEvent
-import event.player.SnifferInteract.snifferInteractEvent
+import event.entity.ItemFrameInteract.itemFrameInteractEvent
+import event.entity.SnifferInteract.snifferInteractEvent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEntityEvent

@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.*
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.*
-
 import util.Keys.GENERIC_RARITY
 import util.Keys.GENERIC_SUB_RARITY
 import util.Keys.TRUE_EYE

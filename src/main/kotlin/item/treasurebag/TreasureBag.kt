@@ -1,5 +1,6 @@
 package item.treasurebag
 
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BundleMeta
 import kotlin.random.Random
@@ -17,6 +18,7 @@ object TreasureBag {
             bagMeta.addItem(stack)
         }
 
+        bagMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
         bagMeta.displayName(type.displayName)
         bagMeta.lore(type.loreLines)
         treasureBag.itemMeta = bagMeta

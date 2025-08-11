@@ -1,4 +1,4 @@
-package event.player
+package event.entity
 
 import chat.Formatting
 import item.ItemRarity
