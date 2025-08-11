@@ -53,9 +53,22 @@ enum class BagItem(val pctChanceToRoll: Int, val amountRange: IntRange, val item
             if(subRarity == SHINY) {
                 elytraMeta.setEnchantmentGlintOverride(true)
             }
+            //TODO: ADD MODEL IDS FOR CUSTOM ELYTRA TEXTURES
             elytraMeta.persistentDataContainer.set(GENERIC_RARITY, STRING, EPIC.rarityName.uppercase())
             elytraMeta.persistentDataContainer.set(GENERIC_SUB_RARITY, STRING, subRarity.name.uppercase())
             this.itemMeta = elytraMeta
+        }
+    ),
+    DRAGON_PORTAL_FRAME(1, 1..1,
+        ItemStack(Material.END_PORTAL_FRAME).apply {
+            val frameMeta = this.itemMeta
+            frameMeta.displayName(allTags.deserialize("<!i><${MYTHIC.colourHex}>End Portal Frame"))
+            frameMeta.lore(listOf(
+                allTags.deserialize("<!i><white>${MYTHIC.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}"),
+                allTags.deserialize("<!i><yellow>A very rare drop from an Ender Dragon."),
+            ))
+            frameMeta.persistentDataContainer.set(GENERIC_RARITY, STRING, MYTHIC.rarityName.uppercase())
+            this.itemMeta = frameMeta
         }
     )
 }

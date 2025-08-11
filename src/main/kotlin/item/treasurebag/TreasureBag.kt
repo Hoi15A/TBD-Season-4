@@ -5,7 +5,6 @@ import org.bukkit.inventory.meta.BundleMeta
 import kotlin.random.Random
 
 object TreasureBag {
-
     fun create(type: BagType): ItemStack {
         val treasureBag = ItemStack(type.bagMaterial)
         val bagMeta = treasureBag.itemMeta as BundleMeta

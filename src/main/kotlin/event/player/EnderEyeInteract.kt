@@ -3,6 +3,7 @@ package event.player
 import chat.Formatting
 import item.ItemRarity
 import item.ItemType
+import item.treasurebag.BagItem
 import java.net.URI
 import java.util.UUID
 import org.bukkit.Location
@@ -58,6 +59,7 @@ class EnderEyeInteract: Listener {
 
             val portalFrameState = clickedBlock.blockData as EndPortalFrame
             if(portalFrameState.hasEye()) return
+            if(item.asOne() == BagItem.DRAGON_EYE.itemStack.asOne()) return
             giveMemento(event)
         }
     }

@@ -10,6 +10,7 @@ enum class BagLootPool(val possibleItems: List<BagItem>) {
         DRAGON_EGG,
         DRAGON_ELYTRA,
         DRAGON_EYE,
-        DRAGON_HEAD
+        DRAGON_HEAD,
+        DRAGON_PORTAL_FRAME
     ))
 }

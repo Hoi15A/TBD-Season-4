@@ -55,6 +55,7 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(EnderEyeInteract(), this)
         server.pluginManager.registerEvents(PlayerItemConsume(), this)
         server.pluginManager.registerEvents(PlayerMovement(), this)
+        server.pluginManager.registerEvents(PortalFrameInteract(), this)
     }
 
     private fun registerCommands() {
