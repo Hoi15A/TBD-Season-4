@@ -1,6 +1,7 @@
 package event.player
 
 import chat.Formatting
+import command.LiveUtil
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -18,5 +19,8 @@ class PlayerQuit: Listener {
             e.quitMessage(Formatting.allTags.deserialize("<dark_gray>[<red>-<dark_gray>] <tbdcolour>${e.player.name}<reset> left the game."))
         }
 
+        if(LiveUtil.isLive(e.player)) {
+            LiveUtil.onPlayerQuit(e.player)
+        }
     }
 }
