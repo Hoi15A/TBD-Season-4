@@ -13,6 +13,7 @@ object Keys {
     val GENERIC_RARITY = NamespacedKey(plugin, "item.rarity")
     val GENERIC_SUB_RARITY = NamespacedKey(plugin, "item.rarity.sub_rarity")
     val PLAYER_PLACED_END_PORTAL_FRAMES = NamespacedKey(plugin, "end_portal_frames.placed_by_player")
+    val NOXESIUM_IMMOVABLE = NamespacedKey("noxesium", "immovable")
 
     /**
      * Lore
