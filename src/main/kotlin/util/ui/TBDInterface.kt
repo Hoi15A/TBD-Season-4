@@ -18,6 +18,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
+import util.Keys.NOXESIUM_IMMOVABLE
 import util.Sounds.INTERFACE_INTERACT
 
 class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
@@ -50,6 +52,7 @@ class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
                 Formatting.allTags.deserialize("<!i><dark_gray>•<#f26427> New applicable items are added automatically."),
                 Formatting.allTags.deserialize("<!i><dark_gray>•<#f26427> Use</#f26427> <tbdcolour>/memory save</tbdcolour> <#f26427>to save older applicable items.")
             ))
+            infoMenuItemMeta.persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true)
             infoMenuItem.itemMeta = infoMenuItemMeta
             pane[0,4] = StaticElement(Drawable.Companion.drawable(infoMenuItem))
         }
@@ -69,6 +72,7 @@ class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
                 filterItemLore.add(Formatting.allTags.deserialize("<!i><dark_gray>• ${if(filterType == interfaceFilter) "<tbdcolour>> " else "<dark_gray>"}${filterType.memoryFilterName}"))
             }
             filterMenuItemMeta.lore(filterItemLore)
+            filterMenuItemMeta.persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true)
             filterMenuItem.itemMeta = filterMenuItemMeta
             pane[5,3] = StaticElement(Drawable.Companion.drawable(filterMenuItem)) {
                 player.playSound(INTERFACE_INTERACT)
@@ -85,6 +89,7 @@ class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
             val closeMenuItem = ItemStack(Material.BARRIER)
             val closeMenuItemMeta = closeMenuItem.itemMeta
             closeMenuItemMeta.displayName(Formatting.allTags.deserialize("<!i><red>Close Menu"))
+            closeMenuItemMeta.persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true)
             closeMenuItem.itemMeta = closeMenuItemMeta
             pane[5,4] = StaticElement(Drawable.Companion.drawable(closeMenuItem)) {
                 player.playSound(INTERFACE_INTERACT)
@@ -96,6 +101,7 @@ class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
             withTransform { pane, _ ->
                 val noMemoriesMenuItem = ItemStack(Material.BARRIER)
                 val noMemoriesMenuItemMeta = noMemoriesMenuItem.itemMeta
+                noMemoriesMenuItemMeta.persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true)
                 noMemoriesMenuItemMeta.displayName(Formatting.allTags.deserialize("<!i><red>The server has no memories... <gray>:pensive:"))
                 noMemoriesMenuItemMeta.lore(listOf(
                     Formatting.allTags.deserialize("<i><dark_gray>They were wiped by the elite in 2007.")
@@ -108,6 +114,7 @@ class TBDInterface(player: Player, interfaceType: TBDInterfaceType) {
         withTransform { pane, _ ->
             val borderItem = ItemStack(Material.GRAY_STAINED_GLASS_PANE).apply {
                 itemMeta = itemMeta.apply {
+                    persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true)
                     isHideTooltip = true
                 }
             }
@@ -141,13 +148,19 @@ class PaginatedMemoryMenu(items: List<ItemStack>): PaginationTransformation<Pane
     items,
     back = PaginationButton(
         position = GridPoint(5, 2),
-        drawable = drawable(ItemStack(Material.ARROW).apply { itemMeta = itemMeta.apply { displayName(Formatting.allTags.deserialize("<!i><tbdcolour>Back")) } }),
+        drawable = drawable(ItemStack(Material.ARROW).apply { itemMeta = itemMeta.apply {
+            displayName(Formatting.allTags.deserialize("<!i><tbdcolour>Back"))
+            persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true)
+        } }),
         increments = mapOf(Pair(ClickType.LEFT, -1)),
         clickHandler = { player -> player.playSound(INTERFACE_INTERACT) }
     ),
     forward = PaginationButton(
         position = GridPoint(5, 6),
-        drawable = drawable(ItemStack(Material.ARROW).apply { itemMeta = itemMeta.apply { displayName(Formatting.allTags.deserialize("<!i><tbdcolour>Next")) } }),
+        drawable = drawable(ItemStack(Material.ARROW).apply { itemMeta = itemMeta.apply {
+            displayName(Formatting.allTags.deserialize("<!i><tbdcolour>Next"))
+            persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true)
+        } }),
         increments = mapOf(Pair(ClickType.LEFT, 1)),
         clickHandler = { player -> player.playSound(INTERFACE_INTERACT) }
     )
@@ -157,8 +170,9 @@ class PaginatedMemoryMenu(items: List<ItemStack>): PaginationTransformation<Pane
                 ItemStack(Material.BARRIER).apply {
                 val itemMeta = this.itemMeta
                 itemMeta.displayName(Formatting.allTags.deserialize("<!i><red>An error occurred when loading this item."))
+                itemMeta.persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true)
                 this.itemMeta = itemMeta
-            } else element)
+            } else element.apply { this.itemMeta.apply { persistentDataContainer.set(NOXESIUM_IMMOVABLE, PersistentDataType.BOOLEAN, true) } })
         )
     }
 }
