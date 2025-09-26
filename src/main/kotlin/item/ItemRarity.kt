@@ -1,5 +1,6 @@
 package item
 
+import net.tbdsmp.tbdseason4.type.Rarity
 import org.bukkit.Color
 
 enum class ItemRarity(val rarityName: String, val rarityGlyph: String, val colour: Color, val colourHex: String) {
@@ -13,4 +14,16 @@ enum class ItemRarity(val rarityName: String, val rarityGlyph: String, val colou
     UNREAL("Unreal", "\uF008", Color.fromRGB(134, 102, 230), "#8666e6"),
     TRANSCENDENT("Transcendent", "\uE004", Color.fromRGB(199, 10, 23), "#c70a17"),
     CELESTIAL("Celestial", "\uE005", Color.fromRGB(245, 186, 10), "#f5ba0a");
+}
+
+fun Rarity.convertRarity(): ItemRarity {
+    return when(this) {
+        Rarity.COMMON -> ItemRarity.COMMON
+        Rarity.UNCOMMON -> ItemRarity.UNCOMMON
+        Rarity.RARE -> ItemRarity.RARE
+        Rarity.EPIC -> ItemRarity.EPIC
+        Rarity.LEGENDARY -> ItemRarity.LEGENDARY
+        Rarity.MYTHIC -> ItemRarity.MYTHIC
+        Rarity.UNKNOWN__ -> ItemRarity.SPECIAL
+    }
 }

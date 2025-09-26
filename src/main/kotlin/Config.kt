@@ -1,4 +1,5 @@
 import org.bukkit.Material
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import util.ui.MemoryFilter
@@ -17,8 +18,7 @@ data class Link(val component: String, val uri: URI, val order: Int)
 @ConfigSerializable
 data class ResourcePack(val uri: URI, val hash: String, val priority: Int)
 
-
-/** TODO: Memory config overhaul
+/** TODO: Memory & API Keys config overhaul
  * Not part of the configurate model, will cause problems if events that receive the config per parameter from main
  * want to access it as it does not exist in the model. Also does not use configurate. Should be reworked into a
  * separate configurate memento config. Also missing default values in the resources default config.
@@ -51,5 +51,18 @@ object Memory {
         plugin.config.set(MEMORY_PATH.plus(memorySuffix), newMemoriesList)
         plugin.config.save(configFile)
         logger.info("A memory has been saved to ${currentFilter}.")
+    }
+}
+
+object APIKeys {
+    fun getIslandAPIKey(): String {
+        val folder = plugin.dataFolder
+        if(!folder.exists()) folder.mkdirs()
+        val keysFile = File(folder, "api_keys.yml")
+        if(!keysFile.exists()) keysFile.createNewFile()
+        val keysFileConfiguration = YamlConfiguration.loadConfiguration(keysFile)
+        if(keysFileConfiguration.get("island-api") == null) keysFileConfiguration.set("island-api", "INSERT_KEY_HERE")
+        keysFileConfiguration.save(keysFile)
+        return keysFileConfiguration.get("island-api") as String
     }
 }

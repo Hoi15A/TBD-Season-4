@@ -1,0 +1,32 @@
+query ActiveIslandExchangeListings {
+    activeIslandExchangeListings {
+        identifier
+        amount
+        cost
+        creationTime
+        endTime
+        asset {
+            __typename
+            ... on SimpleAsset {
+                name
+                rarity
+                uniqueIdentifier
+            }
+            ... on CosmeticToken {
+                name
+                rarity
+                uniqueIdentifier
+                cosmetic {
+                    name
+                    description
+                    category
+                    rarity
+                    collection
+                    obtainmentHint
+                    type
+                    uniqueIdentifier
+                }
+            }
+        }
+    }
+}

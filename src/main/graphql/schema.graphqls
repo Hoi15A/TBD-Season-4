@@ -1,0 +1,855 @@
+"A player's UUID."
+scalar UUID
+@spectaql(options: [{ key: "example", value: "6a085b2c-19fb-4986-b453-231aa942bbec" }])
+@specifiedBy(url: "https://tools.ietf.org/html/rfc4122")
+
+"An RFC-3339 compliant date time."
+scalar DateTime
+@spectaql(options: [{ key: "example", value: "1996-12-19T16:39:57-08:00" }])
+@specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time.html")
+
+"An RFC-3339 compliant date."
+scalar Date
+@spectaql(options: [{ key: "example", value: "1996-12-19", }])
+@specifiedBy(url: "https://tools.ietf.org/html/rfc3339")
+
+"""
+An asset.
+
+Effectively, an asset encompasses all forms of items on the Island.
+This includes Cosmetics, openables, materials, fish, etc.
+Basically, anything that can fit in your Infinibag!
+"""
+interface Asset {
+  "The name of this asset. "
+  name: String!
+
+  "The rarity of this asset."
+  rarity: Rarity!
+
+  """
+  A unique identifier for this specific type of asset.
+
+  This is based on the internal identifier for this asset and can be used to track it over time.
+  For example, if the name of this asset changed, the identifier would remain the same.
+  """
+  uniqueIdentifier: UUID!
+}
+
+"""
+A simple implementation of an asset.
+
+This type is used for when there is no other concrete implementation of asset that is better suited to be returned.
+"""
+type SimpleAsset implements Asset {
+  "The name of this asset. "
+  name: String!
+
+  "The rarity of this asset."
+  rarity: Rarity!
+
+  """
+  A unique identifier for this specific type of asset.
+
+  This is based on the internal identifier for this asset and can be used to track it over time.
+  For example, if the name of this asset changed, the identifier would remain the same.
+  """
+  uniqueIdentifier: UUID!
+}
+
+"""
+A fish.
+
+Queries on this type that accept a weight as an argument will return `null` if this fish does not support the provided weight.
+"""
+type Fish implements Asset {
+  "The name of the fish."
+  name: String!
+  @spectaql(options: [{ key: "example", value: "Midnight Tang" }])
+
+  "The climate this fish can be found in."
+  climate: String!
+  @spectaql(options: [{ key: "example", value: "Temperate" }])
+
+  "The collection this fish can be found in."
+  collection: String!
+  @spectaql(options: [{ key: "example", value: "Dark Grove" }])
+
+  "The rarity of the fish."
+  rarity: Rarity!
+
+  "The time this fish can be caught."
+  catchTime: FishCatchTime!
+
+  "If this fish is elusive."
+  elusive: Boolean!
+
+  "The number of trophies awarded for catching this fish in a given weight."
+  trophies(weight: FishWeight!): Int
+
+  "The number of A.N.G.L.R. Tokens given for selling this fish in a given weight."
+  sellingPrice(weight: FishWeight!): Int
+
+  """
+  The number of people who have caught this fish.
+
+  The exact number is only displayed if fewer than 1000 players have caught this fish.
+  Otherwise, either `1000+` or `10000+` will be returned, indicating the real value is higher than this number.
+  """
+  globalNumberCaught(weight: FishWeight!): String
+  @spectaql(options: [{ key: "example", value: "1000+" }])
+
+  """
+  A unique identifier for this specific type of asset.
+
+  This is based on the internal identifier for this asset and can be used to track it over time.
+  For example, if the name of this asset changed, the identifier would remain the same.
+  """
+  uniqueIdentifier: UUID!
+}
+
+"The time a fish can be caught in."
+enum FishCatchTime {
+  "The fish can always be caught."
+  ALWAYS
+
+  "The fish can only be caught during daytime."
+  DAY
+
+  "The fish can only be caught during nighttime."
+  NIGHT
+}
+
+"""
+The weight of a fish.
+
+Note that some weights are not used for crabs, or are only used for crabs.
+"""
+enum FishWeight {
+  "Average."
+  AVERAGE
+
+  "Large."
+  LARGE
+
+  """
+  Massive.
+
+  This weight is not used for crabs.
+  """
+  MASSIVE
+
+  """
+  Gargantuan.
+
+  This weight is not used for crabs.
+  """
+  GARGANTUAN
+
+  """
+  Colossal.
+
+  This weight is only used for crabs.
+  """
+  COLOSSAL
+}
+
+"A record of the weight of fish that have been caught."
+type FishRecord {
+  "The fish this record is for."
+  fish: Fish!
+
+  "A list of data about the weights that have been caught."
+  weights: [FishCaughtWeight!]!
+}
+
+"Data about a caught fish weight."
+type FishCaughtWeight {
+  "The weight that was caught."
+  weight: FishWeight!
+
+  "When the player first caught this weight."
+  firstCaught: Date!
+}
+
+"A rank."
+enum Rank {
+  "The Champ rank."
+  CHAMP
+
+  "The Grand Champ rank."
+  GRAND_CHAMP
+
+  "The Grand Champ Royale rank."
+  GRAND_CHAMP_ROYALE
+
+  "The Grand Champ Supreme rank."
+  GRAND_CHAMP_SUPREME
+
+  "The Creator rank."
+  CREATOR
+
+  "The Contestant rank."
+  CONTESTANT
+
+  "The Moderator rank."
+  MODERATOR
+
+  "The Noxcrew rank."
+  NOXCREW
+}
+
+"The categories for trophies."
+enum TrophyCategory {
+  "Style trophies."
+  STYLE
+
+  "Skill trophies."
+  SKILL
+
+  "Angler trophies."
+  ANGLER
+}
+
+"Data for types that track some form of progression."
+type ProgressionData {
+  "The amount obtained."
+  obtained: Int!
+
+  "The amount that can be obtained."
+  obtainable: Int!
+}
+
+"Data on the amount of trophies a user has/can have."
+type TrophyData {
+  "The amount of trophies obtained."
+  obtained: Int!
+
+  "The maximum amount of trophies that can be obtained."
+  obtainable: Int!
+
+  "The amount of bonus trophies."
+  bonus: Int!
+}
+
+"Data relating to a level."
+type LevelData {
+  "The overall level."
+  level: Int!
+
+  "The zero-indexed evolution of the level."
+  evolution: Int!
+
+  "The next level that will have an evolution, if any."
+  nextEvolutionLevel: Int
+
+  "The progress the player is making towards their next level, if any."
+  nextLevelProgress: ProgressionData
+}
+
+"A Crown Level and associated trophy data."
+type CrownLevel {
+  "The overall level data."
+  levelData: LevelData!
+
+  "The fishing level data."
+  fishingLevelData: LevelData!
+
+  "The style level data."
+  styleLevelData: LevelData!
+
+  "The amount of trophies the player has."
+  trophies(
+    category: TrophyCategory = null
+  ): TrophyData!
+}
+
+"The status of a player's MCC+ subscription."
+type MCCPlusStatus {
+  "The current evolution index for MCC+ icon."
+  evolution: Int!
+
+  "The instant they started their current streak."
+  streakStart: DateTime!
+
+  "The total number of days they have been subscribed for."
+  totalDays: Int!
+}
+
+"A player who has logged in to MCC Island."
+type Player {
+  "The player's Minecraft UUID in dashed format."
+  uuid: UUID!
+
+  "The player's username, if known."
+  username: String
+  @spectaql(options: [{ key: "example", value: "LadyAgnes" }])
+
+  "The ranks which the user is associated with, if any."
+  ranks: [Rank!]!
+
+  "The player's MCC+ status, if currently subscribed."
+  mccPlusStatus: MCCPlusStatus
+
+  "The player's Crown Level and associated trophy data."
+  crownLevel: CrownLevel!
+
+  """
+  The current status of the player.
+
+  This method is conditional on the player having the in-game "status" API setting enabled.
+  """
+  status: Status
+
+  """
+  Collections data for the player.
+
+  This method is conditional on the player having the in-game "collections" API setting enabled.
+  """
+  collections: Collections
+
+  """
+  Social data for the player.
+
+  This method is conditional on the player having the in-game "social" API setting enabled.
+  """
+  social: Social
+
+  """
+  Statistics data for the player.
+
+  This method is conditional on the player having the in-game "statistics" API setting enabled.
+  """
+  statistics: Statistics
+}
+
+"Social data."
+type Social {
+  "A list of the player's friends."
+  friends: [Player!]!
+
+  "The player's party."
+  party: Party!
+}
+
+"Collections data."
+type Collections {
+  "The player's earned currency."
+  currency: Currency!
+
+  "A list of cosmetics the player currently has equipped."
+  equippedCosmetics: [Cosmetic!]!
+
+  "Returns the ownership state of all cosmetics, optionally in a category and/or collection."
+  cosmetics(
+    category: CosmeticCategory = null,
+    collection: String = null
+    @spectaql(options: { key: "example", value: "Oceanic" })
+  ): [CosmeticOwnershipState!]!
+
+  "Returns the record data for all fish, optionally in a specific collection."
+  fish(
+    collection: String = null
+    @spectaql(options: [{ key: "example", value: "Dark Grove" }])
+  ): [FishRecord!]!
+}
+
+"The ownership state of a cosmetic."
+type CosmeticOwnershipState {
+  "The cosmetic in question."
+  cosmetic: Cosmetic!
+
+  "If the cosmetic is owned."
+  owned: Boolean!
+
+  "The Chroma Packs that have applied to this cosmetic, if it is colorable."
+  chromaPacks: [String!]
+  @spectaql(options: { key: "example", value: "[\"oceanic\", \"natural\"]" })
+
+  "The number of Royal Reputation donations that have been made of this cosmetic, if it can be donated."
+  donationsMade: Int
+}
+
+"A player's earned currency."
+type Currency {
+  "The number of coins the player currently has."
+  coins: Int!
+
+  "The number of Royal Reputation the player currently has."
+  royalReputation: Int!
+
+  "The number of A.N.G.L.R. Tokens the player currently has."
+  anglrTokens: Int!
+}
+
+"A player's current status."
+type Status {
+  "Whether the player is online or not."
+  online: Boolean!
+
+  "The player's current server, populated if they are online."
+  server: Server
+
+  "When the player first joined MCC Island, if known."
+  firstJoin: DateTime
+
+  "When the player most recently joined MCC Island, if known."
+  lastJoin: DateTime
+}
+
+"The category of a server."
+enum ServerCategory {
+  "A lobby server."
+  LOBBY
+
+  "A game server."
+  GAME
+
+  "A limbo server."
+  LIMBO
+
+  "A queue server"
+  QUEUE
+}
+
+"A game."
+enum Game {
+  "Hole in the Wall."
+  HOLE_IN_THE_WALL
+
+  "To Get To The Other Side (TGTTOS)."
+  TGTTOS
+
+  "Battle Box."
+  BATTLE_BOX
+
+  "Sky Battle."
+  SKY_BATTLE
+
+  "Parkour Warrior."
+  PARKOUR_WARRIOR
+
+  "Dynaball."
+  DYNABALL
+
+  "Rocket Spleef."
+  ROCKET_SPLEEF
+}
+
+"A server on the network."
+type Server {
+  "The category of the server."
+  category: ServerCategory!
+  @spectaql(options: [{ key: "example", value: "GAME" }])
+
+  "The sub-type of the server that can hold additional information about the server."
+  subType: String!
+  @spectaql(options: [{ key: "example", value: "daily" }])
+
+  "The game associated with this server, if any."
+  associatedGame: Game
+  @spectaql(options: [{ key: "example", value: "PARKOUR_WARRIOR" }])
+}
+
+"A player's status within a party."
+type Party {
+  "Whether the player is in an active party."
+  active: Boolean!
+
+  "The leader of the party, populated if the party exists."
+  leader: Player
+
+  "The members of the party, populated if the party exists."
+  members: [Player!]
+}
+
+"Statistic-related data."
+type Statistics {
+  """
+  Returns the value stored for the given statistic in a rotation.
+
+  The returned number will be `null` if the statistic does not track in the provided rotation, or if the statistic doesn't exist.
+  """
+  rotationValue(
+    statisticKey: String!
+    @spectaql(options: [{ key: "example", value: "games_played" }]),
+    rotation: Rotation! = LIFETIME,
+  ): Int
+}
+
+"A statistic."
+type Statistic {
+  "The key of the statistic."
+  key: String!
+  @spectaql(options: [{ key: "example", value: "games_played" }])
+
+  "If this statistic generates leaderboards."
+  forLeaderboard: Boolean!
+
+  """
+  The rotations for which this statistic is tracked.
+
+  These are the rotations that can be used to generate leaderboards or fetch rotation values.
+  Note that the `YEARLY` rotation never generates leaderboards, even if it is returned in this list.
+  """
+  rotations: [Rotation!]!
+
+  """
+  Returns the leaderboard for this statistic in a given rotation.
+
+  If this statistic does not generate leaderboards, or the statistic is not tracked for the provided rotation, this will return `null`.
+
+  Both the `amount` and `offset` fields are coerced lower than arbitrary maximum values which may change at any time.
+
+  The amount of returned entries may be larger than `amount`.
+  This is because the `amount` field determines the number of placements to return and multiple users may be tied on the same placement.
+  """
+  leaderboard(
+    rotation: Rotation! = LIFETIME,
+    amount: Int! = 10,
+    offset: Int! = 0,
+  ): [LeaderboardEntry!]
+}
+
+"An entry in a leaderboard."
+type LeaderboardEntry {
+  """
+  The player who has this entry.
+
+  This will be `null` if the player does not have the statistics enabled for the API.
+  However, for Crown Level or Trophy count leaderboards, the player will not be `null`.
+  It will also never be `null` for players with a rank less than or equal to 10.
+  """
+  player: Player
+
+  "The rank for this entry."
+  rank: Int!
+
+  "The value for this entry."
+  value: Int!
+}
+
+"The result of fetching a value of a statistic."
+type StatisticValueResult {
+  "The statistic."
+  statistic: Statistic!
+
+  "The value."
+  value: Int!
+}
+
+"""
+A rotation period.
+
+Each period resets at 10AM UTC.
+"""
+enum Rotation {
+  "A daily rotation that resets."
+  DAILY
+
+  "A weekly rotation that resets on Tuesdays."
+  WEEKLY
+
+  "A monthly rotation that resets on the first day of every month."
+  MONTHLY
+
+  "A yearly rotation that resets on the first day of every year."
+  YEARLY
+
+  "A lifetime rotation; a rotation period used to indicate something never rotates."
+  LIFETIME
+}
+
+"Different categories of cosmetics."
+enum CosmeticCategory {
+  "Hats."
+  HAT
+
+  "Hair."
+  HAIR
+
+  "Accessories."
+  ACCESSORY
+
+  "Auras."
+  AURA
+
+  "Trails."
+  TRAIL
+
+  "Cloaks."
+  CLOAK
+
+  "Fishing rods."
+  ROD
+}
+
+"Different types of cosmetics."
+enum CosmeticType {
+  "Standard cosmetics."
+  STANDARD
+
+  """
+  Exclusive cosmetics.
+
+  Like Standard cosmetics, but much rarer.
+  """
+  EXCLUSIVE
+
+  """
+  Arcane cosmetics.
+
+  Like standard cosmetics, but they boost a perk in the Style Perk system.
+  """
+  ARCANE
+
+  """
+  Collector cosmetics.
+
+  Incredibly difficult to obtain cosmetics that do not provide Style Trophies.
+  """
+  COLLECTOR
+
+  """
+  Limited cosmetics.
+
+  Cosmetics that are no longer obtainable except via trading.
+  They are also worth Bonus Trophies.
+  """
+  LIMITED
+}
+
+"Different tiers of rarity."
+enum Rarity {
+  "Common."
+  COMMON
+
+  "Uncommon."
+  UNCOMMON
+
+  "Rare."
+  RARE
+
+  "Epic."
+  EPIC
+
+  "Legendary."
+  LEGENDARY
+
+  "Mythic."
+  MYTHIC
+}
+
+"A cosmetic."
+type Cosmetic implements Asset {
+  "The name of the cosmetic."
+  name: String!
+
+  "The description of the cosmetic."
+  description: String!
+
+  "The category the cosmetic is in."
+  category: CosmeticCategory!
+
+  "The collection this cosmetic is in."
+  collection: String!
+
+  "The rarity of the cosmetic."
+  rarity: Rarity!
+
+  "If this cosmetic can be colored using Chroma Packs."
+  colorable: Boolean!
+
+  """
+  The number of trophies this cosmetic awards.
+
+  Note that this does not include the completion bonus for applying all Chroma Packs to the cosmetic.
+  """
+  trophies: Int!
+
+  """
+  If this cosmetic awards bonus trophies.
+
+  This will be `null` if the cosmetic does not award any trophies.
+  """
+  isBonusTrophies: Boolean
+
+  "If this cosmetic can be donated for Royal Reputation."
+  canBeDonated: Boolean!
+
+  """
+  Information about the Royal Reputation this cosmetic provides.
+
+  This will be `null` if the cosmetic cannot be donated.
+  """
+  royalReputation: RoyalReputation
+
+  "A hint as to how this cosmetic can be obtained."
+  obtainmentHint: String!
+
+  "The type of this cosmetic."
+  type: CosmeticType!
+
+  """
+  The number of people who own this cosmetic.
+
+  The exact number is only displayed if fewer than 1000 players own this cosmetic.
+  Otherwise, either `1000+` or `10000+` will be returned, indicating the real value is higher than this number.
+  Some cosmetics are excluded from ownership reporting, for these cosmetics `null` will be returned.
+  """
+  globalNumberOwned: String
+  @spectaql(options: [{ key: "example", value: "1000+" }])
+
+  """
+  A unique identifier for this specific type of asset.
+
+  This is based on the internal identifier for this asset and can be used to track it over time.
+  For example, if the name of this asset changed, the identifier would remain the same.
+  """
+  uniqueIdentifier: UUID!
+}
+
+"A cosmetic token."
+type CosmeticToken implements Asset {
+  "The name of this cosmetic token. "
+  name: String!
+
+  "The rarity of this asset."
+  rarity: Rarity!
+
+  "The cosmetic this token holds."
+  cosmetic: Cosmetic!
+
+  """
+  A unique identifier for this specific type of asset.
+
+  This is based on the internal identifier for this asset and can be used to track it over time.
+  For example, if the name of this asset changed, the identifier would remain the same.
+  """
+  uniqueIdentifier: UUID!
+}
+
+"A listing in the Island Exchange."
+type IslandExchangeListing {
+  "The asset that is being sold."
+  asset: Asset!
+
+  "The amount of the asset that is being sold."
+  amount: Int!
+
+  "The time this listing was created."
+  creationTime: DateTime!
+
+  "The time this listing will expire (if the listing is active) or the time it sold."
+  endTime: DateTime!
+
+  "The cost of purchasing this listing."
+  cost: Int!
+
+  """
+  A unique identifier for this entry.
+
+  This can be used to deduplicate listings if storing externally.
+  """
+  identifier: UUID!
+}
+
+"Information about the Royal Reputation for a cosmetic."
+type RoyalReputation {
+  "The maximum number of donations that can be made for this cosmetic."
+  donationLimit: Int!
+
+  "The amount of reputation that each donation provides."
+  reputationAmount: Int!
+}
+
+"An auction listing."
+type AuctionListing {
+  "The asset that is being auctioned."
+  asset: Asset!
+
+  "The current cost of the auction."
+  cost: Int!
+
+  "The time this auction received a bid or the start time if no bids have been made yet."
+  lastUpdateTime: DateTime!
+
+  "The time this auction will end."
+  endTime: DateTime!
+
+  """
+  A unique identifier for this listing.
+
+  This can be used to deduplicate listings if storing externally.
+  """
+  identifier: UUID!
+}
+
+"Available queries."
+type Query {
+  "Given a UUID, returns a Player if they have logged in to MCC Island."
+  player(uuid: UUID!): Player
+
+  """
+  Given a username, returns a Player object if they have logged into MCC Island with this username.
+
+  This method may not return a player that has this username if they have not logged in recently enough for us
+  to verify that the player still owns this username.
+  """
+  playerByUsername(
+    username: String!
+    @spectaql(options: [{ key: "example", value: "LadyAgnes" }])
+  ): Player
+
+  "Returns a list of all known statistics."
+  statistics: [Statistic!]!
+
+  "Returns a statistic by it's name."
+  statistic(
+    key: String!
+    @spectaql(options: [{ key: "example", value: "games_played" }])
+  ): Statistic
+
+  """
+  Returns when this rotation will next rotate.
+
+  If the rotation is due the exact time this method is called, this method will return the next time that it will rotate.
+  """
+  nextRotation(rotation: Rotation!): DateTime!
+
+  """
+  Returns when this rotation last rotated.
+
+  If the rotation is due the exact time this method is called, this method will return the current time.
+  """
+  previousRotation(rotation: Rotation!): DateTime!
+
+  """
+  Returns a list of all active Island Exchange listings.
+
+  This endpoint will not return listings until they have been active for a certain length of time.
+  This is to help prevent sniping/botting and to ensure server players have priority over website/bot users.
+  """
+  activeIslandExchangeListings: [IslandExchangeListing!]!
+
+  """
+  Returns a list of all Island Exchange sales made in the last 24 hours.
+
+  This only includes listings that sold successfully.
+  Listings that did not sell or are still active are not included in this.
+  """
+  soldIslandExchangeListings: [IslandExchangeListing!]!
+
+  """
+  Returns a list of all active auctions.
+
+  This includes items being sold in the Grand Auction as well as other auctions (such as event auctions).
+  """
+  activeAuctionListings: [AuctionListing!]!
+}
+
+"Internal directive used to generate some documentation elements."
+directive @spectaql(options: [SpectaQLOption]) on QUERY | MUTATION | SUBSCRIPTION | FIELD | FRAGMENT_DEFINITION | FRAGMENT_SPREAD | INLINE_FRAGMENT | VARIABLE_DEFINITION | SCHEMA | SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | INTERFACE | UNION | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+
+"Internal key/value pair for documentation options."
+input SpectaQLOption { key: String!, value: String! }
