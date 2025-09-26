@@ -44,7 +44,7 @@ class LockMap {
     }
 
     @Command("unlockmap")
-    @CommandDescription("Resets the item's name to default.")
+    @CommandDescription("Makes it that you can copy the map again. Only if you ran the lockmap command urself.")
     @Permission("tbd.command.lockmap")
     fun unlockMap(css: CommandSourceStack) {
         val player = css.sender as? Player ?: return
