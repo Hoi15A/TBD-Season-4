@@ -5,6 +5,7 @@ import event.entity.*
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import lore.Divinity
+import lore.MannequinMech
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.incendo.cloud.annotations.AnnotationParser
@@ -31,6 +32,7 @@ class SeasonFourPlugin : JavaPlugin() {
         registerMessengers()
         VisualChat.clearChatEntities()
         InterfacesListeners.install(plugin)
+        MannequinMech.removeAllMannequins()
     }
 
     override fun onDisable() {
@@ -38,6 +40,7 @@ class SeasonFourPlugin : JavaPlugin() {
         Bukkit.getServer().scoreboardManager.mainScoreboard.teams.forEach { team -> if(team.name.contains("tbd.true_eye.")) team.unregister() }
         VisualChat.clearChatEntities()
         Divinity.clearChains()
+        MannequinMech.removeAllMannequins()
     }
 
     private fun setupEvents() {
@@ -59,6 +62,7 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(BlockPlace(), this)
         server.pluginManager.registerEvents(PlayerCraft(), this)
         server.pluginManager.registerEvents(CrafterListener(), this)
+        server.pluginManager.registerEvents(MechTargetingListener(), this) // Delete after Senate Meeting
     }
 
     private fun registerCommands() {
