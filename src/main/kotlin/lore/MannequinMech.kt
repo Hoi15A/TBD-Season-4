@@ -36,8 +36,7 @@ object MannequinMech {
             isCollidable = false
             isPersistent = true
             setShouldBurnInDay(false)
-            getAttribute(Attribute.SCALE)?.baseValue = 4.0
-            getAttribute(Attribute.ATTACK_DAMAGE)?.baseValue = 15.0
+            getAttribute(Attribute.ATTACK_DAMAGE)?.baseValue = 23.0
             getAttribute(Attribute.FOLLOW_RANGE)?.baseValue = 100.0
             getAttribute(Attribute.MOVEMENT_SPEED)?.baseValue = 0.5
             getAttribute(Attribute.STEP_HEIGHT)?.baseValue = 5.0
@@ -54,7 +53,6 @@ object MannequinMech {
             isSilent = true
             isPersistent = true
             isInvulnerable = true
-            getAttribute(Attribute.SCALE)?.baseValue = 5.0
             getAttribute(Attribute.KNOCKBACK_RESISTANCE)?.baseValue = 1.0
             getAttribute(Attribute.ARMOR)?.baseValue = 8.0
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = customMaxHealth
@@ -112,10 +110,16 @@ object MannequinMech {
                             Formatting.allTags.deserialize("<red><bold>Sebs Mecha has reached full size!")
                         )
                     }
+                    pair.mechHost.getAttribute(Attribute.SCALE)?.baseValue = 4.0
                     pair.mechShow.isInvulnerable = false
                     pair.mechHost.setAI(true)
-                }
 
+                    pair.bossBar.players.forEach { player -> // Delete after Senate Meeting
+                        if (player.name == "Sebiann") {
+                            pair.mechHost.addPassenger(player)
+                        }
+                    }
+                }
             }, delayBetweenGrowth * index)
         }
     }
