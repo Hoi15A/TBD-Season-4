@@ -62,7 +62,6 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(BlockPlace(), this)
         server.pluginManager.registerEvents(PlayerCraft(), this)
         server.pluginManager.registerEvents(CrafterListener(), this)
-        server.pluginManager.registerEvents(MechTargetingListener(), this) // Delete after Senate Meeting
     }
 
     private fun registerCommands() {
