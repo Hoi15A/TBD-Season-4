@@ -12,18 +12,20 @@ import org.incendo.cloud.annotations.CommandDescription
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
 import org.incendo.cloud.annotations.Argument
+import org.incendo.cloud.annotations.Default
 import org.incendo.cloud.annotations.suggestion.Suggestions
 import org.incendo.cloud.context.CommandContext
 
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class Retexture() {
-    @Command("retexture <texture>")
+    @Command("retexture <texture> [equippable]")
     @CommandDescription("Retexture item in hand.")
     @Permission("tbd.command.retexture")
     fun retexture(
         css: CommandSourceStack,
-        @Argument(value = "texture", suggestions = "textureOptions") texture: String
+        @Argument(value = "texture", suggestions = "textureOptions") texture: String,
+        @Argument(value = "equippable") @Default("false") equippable: Boolean
     ) {
         val player = css.sender as? Player ?: return
         val item = player.inventory.itemInMainHand
@@ -43,7 +45,7 @@ class Retexture() {
         }
         val key = NamespacedKey("tbdsmp", texture)
         meta.itemModel = key
-        if (texture.endsWith("cap")) {
+        if (equippable) {
             val equippable = ItemStack.of(Material.LEATHER_HELMET).itemMeta.equippable
             meta.setEquippable(equippable)
         }
@@ -68,7 +70,7 @@ class Retexture() {
             return
         }
 
-        if (item.itemMeta.itemModel.toString().endsWith("cap")) meta.setEquippable(null)
+        meta.setEquippable(null)
         meta.itemModel = null
         item.itemMeta = meta
 
