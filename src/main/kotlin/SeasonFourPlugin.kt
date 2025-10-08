@@ -22,7 +22,8 @@ import java.io.File
 @Suppress( "unstableApiUsage")
 class SeasonFourPlugin : JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager<CommandSourceStack>
-    private lateinit var config: Config
+    lateinit var config: Config
+        private set
 
     override fun onEnable() {
         this.logger.info("We are so back.")
@@ -111,3 +112,4 @@ class SeasonFourPlugin : JavaPlugin() {
 val plugin = Bukkit.getPluginManager().getPlugin("tbdseason4")!!
 val logger = plugin.logger
 val messenger = Bukkit.getMessenger()
+val config: Config get() = (plugin as SeasonFourPlugin).config

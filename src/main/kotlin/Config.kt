@@ -9,7 +9,8 @@ import java.net.URI
 @ConfigSerializable
 data class Config(
     val links: List<Link>,
-    val resourcePacks: List<ResourcePack>
+    val resourcePacks: List<ResourcePack>,
+    val textureOptions: List<String>
 )
 
 @ConfigSerializable

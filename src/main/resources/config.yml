@@ -20,3 +20,6 @@ resource-packs:
   - uri: "https://github.com/TBDSMP/resourcepack-s4/releases/latest/download/TBD-RP-S4.zip"
     hash: ""
     priority: 99
+
+texture-options:
+  - dunce_cap
