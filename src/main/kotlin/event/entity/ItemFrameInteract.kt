@@ -65,7 +65,7 @@ object ItemFrameInteract {
     }
 
     fun scavengerHunt(event: PlayerInteractEntityEvent) {
-        val file = File("plugins/tbdseason4/scavengerhunt.yml")
+        val file = File("plugins/tbdseason4/scavengerhunt.flag")
 
         if (file.exists().not()) return
 
