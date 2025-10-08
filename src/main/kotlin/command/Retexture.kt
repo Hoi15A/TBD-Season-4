@@ -37,7 +37,6 @@ class Retexture() {
             player.sendMessage(Formatting.allTags.deserialize("<red>You must be holding an item!"))
             return
         }
-        // Get and modify item meta
         val meta = item.itemMeta ?: run {
             player.sendMessage(Formatting.allTags.deserialize("<red>This item cannot be retextured!"))
             return
@@ -50,6 +49,30 @@ class Retexture() {
         }
         item.itemMeta = meta
         player.sendMessage(Formatting.allTags.deserialize("<tbdcolour>Applied texture: $texture"))
+    }
+
+    @Command("retexture reset")
+    @CommandDescription("Reset item texture to default.")
+    @Permission("tbd.command.retexture")
+    fun reset(css: CommandSourceStack) {
+        val player = css.sender as? Player ?: return
+        val item = player.inventory.itemInMainHand
+
+        if (item.type.isAir) {
+            player.sendMessage(Formatting.allTags.deserialize("<red>You must be holding an item!"))
+            return
+        }
+
+        val meta = item.itemMeta ?: run {
+            player.sendMessage(Formatting.allTags.deserialize("<red>This item cannot be reset!"))
+            return
+        }
+
+        if (item.itemMeta.itemModel.toString().endsWith("cap")) meta.setEquippable(null)
+        meta.itemModel = null
+        item.itemMeta = meta
+
+        player.sendMessage(Formatting.allTags.deserialize("<tbdcolour>Item texture reset to default."))
     }
 
     @Suggestions("textureOptions")
