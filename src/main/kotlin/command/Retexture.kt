@@ -1,5 +1,6 @@
 package command
 
+import chat.Formatting
 import config
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Material
@@ -28,18 +29,17 @@ class Retexture() {
         val item = player.inventory.itemInMainHand
 
         if (texture !in config.textureOptions) {
-            player.sendMessage("Invalid texture option.")
-            player.sendMessage("Valid options: ${config.textureOptions.joinToString(", ")}")
+            player.sendMessage(Formatting.allTags.deserialize("<red>Invalid texture option."))
+            player.sendMessage(Formatting.allTags.deserialize("<tbdcolour>Valid options: ${config.textureOptions.joinToString(", ")}"))
             return
         }
         if (item.type.isAir) {
-            player.sendMessage("You must be holding an item!")
+            player.sendMessage(Formatting.allTags.deserialize("<red>You must be holding an item!"))
             return
         }
-        player.sendMessage("Applying texture: $texture")
         // Get and modify item meta
         val meta = item.itemMeta ?: run {
-            player.sendMessage("This item cannot be retextured!")
+            player.sendMessage(Formatting.allTags.deserialize("<red>This item cannot be retextured!"))
             return
         }
         val key = NamespacedKey("tbdsmp", texture)
@@ -49,6 +49,7 @@ class Retexture() {
             meta.setEquippable(equippable)
         }
         item.itemMeta = meta
+        player.sendMessage(Formatting.allTags.deserialize("<tbdcolour>Applied texture: $texture"))
     }
 
     @Suggestions("textureOptions")
