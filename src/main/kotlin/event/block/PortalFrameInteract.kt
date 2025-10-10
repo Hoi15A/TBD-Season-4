@@ -1,6 +1,8 @@
 package event.block
 
 import item.treasurebag.BagItem
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.audience.Audience.audience
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
@@ -43,8 +45,10 @@ class PortalFrameInteract: Listener {
             clickedBlock.world.persistentDataContainer.set(PLAYER_PLACED_END_PORTAL_FRAMES, LocationArrayDataType(), placedFrames.toTypedArray())
             clickedBlock.location.world.dropItem(clickedBlock.location.add(0.5, 0.0, 0.5), BagItem.DRAGON_PORTAL_FRAME.itemStack)
             clickedBlock.type = Material.AIR
-            clickedBlock.location.world.playSound(Sounds.FRAME_EYE_BREAK)
-            clickedBlock.location.world.playSound(Sounds.FRAME_BREAK)
+
+            val nearbyPlayers = audience(clickedBlock.location.getNearbyPlayers(16.0))
+            nearbyPlayers.playSound(Sounds.FRAME_EYE_BREAK)
+            nearbyPlayers.playSound(Sounds.FRAME_BREAK)
             clickedBlock.location.world.spawnParticle(Particle.REVERSE_PORTAL, clickedBlock.location.add(0.5, 0.5, 0.5), 50, 0.0, 0.0, 0.0, 0.1, null, true)
         }
     }
