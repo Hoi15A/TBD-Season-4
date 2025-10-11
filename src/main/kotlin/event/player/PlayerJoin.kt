@@ -4,7 +4,6 @@ import Config
 import Link
 import ResourcePack
 import chat.Formatting
-import chat.Formatting.allTags
 import command.LiveUtil
 import logger
 import lore.GhostMode
@@ -56,13 +55,7 @@ class PlayerJoin : Listener {
             LiveUtil.onPlayerJoin(e.player)
         }
 
-        val playerLinks = Bukkit.getServerLinks()
-
-        links.forEach {
-            playerLinks.addLink(allTags.deserialize(it.component), it.uri)
-        }
-
-        e.player.sendLinks(playerLinks)
+        e.player.sendLinks(Bukkit.getServerLinks())
     }
 
     private fun sendTabList(audience: Audience) {

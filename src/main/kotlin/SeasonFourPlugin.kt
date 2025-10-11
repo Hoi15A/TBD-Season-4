@@ -1,3 +1,4 @@
+import chat.Formatting.allTags
 import chat.VisualChat
 import com.noxcrew.interfaces.InterfacesListeners
 import event.block.*
@@ -33,6 +34,10 @@ class SeasonFourPlugin : JavaPlugin() {
         VisualChat.clearChatEntities()
         InterfacesListeners.install(plugin)
         MannequinMech.removeAllMannequins()
+
+        config.links.forEach {
+            Bukkit.getServerLinks().addLink(allTags.deserialize(it.component), it.uri)
+        }
     }
 
     override fun onDisable() {
