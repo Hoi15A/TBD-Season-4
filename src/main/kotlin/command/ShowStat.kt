@@ -30,7 +30,7 @@ import java.util.UUID
 class ShowStat {
 
     val pageSize = 14
-    val secondsPerPage = 10
+    val secondsPerPage = 10 // TODO: config rewrite, make this accessible in config
 
     @Command("showstat|sb <stat>")
     @Permission("tbd.command.echo")

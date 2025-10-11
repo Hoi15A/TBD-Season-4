@@ -6,7 +6,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.persistence.PersistentDataType
 import util.Keys
-import util.Sounds.DIDGERIDOO
+import util.Sounds.ERROR_DIDGERIDOO
 import util.secondsToTicks
 
 class BlockPlace : Listener {
@@ -17,7 +17,7 @@ class BlockPlace : Listener {
         if (isUnplaceable) {
             event.player.setCooldown(event.itemInHand, 5.secondsToTicks())
             event.player.sendMessage(allTags.deserialize("<i><gradient:#EA7300:#A62C2C>A mysterious force prevents you from placing the ").append(event.itemInHand.effectiveName()))
-            event.player.playSound(DIDGERIDOO)
+            event.player.playSound(ERROR_DIDGERIDOO)
             event.isCancelled = true
         }
     }
