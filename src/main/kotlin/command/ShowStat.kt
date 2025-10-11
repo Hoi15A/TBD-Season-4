@@ -33,7 +33,7 @@ class ShowStat {
     val secondsPerPage = 10 // TODO: config rewrite, make this accessible in config
 
     @Command("showstat|sb <stat>")
-    @Permission("tbd.command.echo")
+    @Permission("tbd.command.showstat")
     fun showStat(css: CommandSourceStack,
              stat: Statistic,
              @Flag("material", aliases = ["m"]) material: Material?,
