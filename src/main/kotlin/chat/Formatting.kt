@@ -14,6 +14,7 @@ object Formatting {
         NO_PREFIX("", ""),
         DEV_PREFIX("dev", "\uD001"),
         ADMIN_PREFIX("admin", "\uD002"),
+        LIVE_PREFIX("live", "\uF017"),
         WARNING_PREFIX("warning", "⚠"),
         SKULL_PREFIX("skull", "☠");
 

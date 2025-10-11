@@ -1,4 +1,4 @@
-package event
+package event.entity
 
 import lore.Divinity
 import org.bukkit.entity.Firework

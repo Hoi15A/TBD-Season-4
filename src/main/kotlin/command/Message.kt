@@ -38,7 +38,7 @@ class Message {
                 System.currentTimeMillis() / 1000
                 sender.sendMessage(Formatting.restrictedTags.deserialize("<i><tbdcolour>You<white> -> <yellow>Yourself</yellow>: ${text.joinToString(" ")}</i>"))
             } else {
-                if(recipient.name == "Byrtrum") {
+                if(recipient.name == "Byrtrum" || recipient.name == "fish_25") {
                     sender.sendMessage(Formatting.restrictedTags.deserialize("<i><tbdcolour>You<white> -> <yellow><obf>********</obf></yellow>: <dark_gray>Yo<obf>u</obf>r m<obf>e</obf>ssage w<obf>a</obf>s lo<obf>s</obf>t...</i>"))
                     sender.playSound(Sounds.ENDER_EYE_PLACE_FAIL_BACKGROUND)
                 } else {
@@ -91,7 +91,7 @@ class Message {
     private fun sendMessage(sender: Player, recipient: Player, text: Array<String>) {
         val message = text.joinToString(" ")
 
-        if(sender.name == "Byrtrum") {
+        if(sender.name == "Byrtrum" || recipient.name == "fish_25") {
             sender.sendMessage(Formatting.restrictedTags.deserialize("<i><tbdcolour>You</tbdcolour> -> <yellow>${recipient.name}</yellow>: $message</i>"))
             recipient.sendMessage(Formatting.restrictedTags.deserialize("<i><yellow><obf>${sender.name}</obf></yellow> -> <tbdcolour>You</tbdcolour>: $message</i>"))
         } else {

@@ -17,6 +17,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import util.Keys
+import util.ui.MemoryFilter
 
 object FishingSocial {
     private val fishingSocialTasks = mutableMapOf<Int, BukkitRunnable>()
@@ -143,5 +144,6 @@ object FishingSocial {
         itemMeta.setEnchantmentGlintOverride(true)
         itemStack.setItemMeta(itemMeta)
         player.inventory.addItem(itemStack)
+        Memory.saveMemory(itemStack, MemoryFilter.SEASON_FOUR)
     }
 }

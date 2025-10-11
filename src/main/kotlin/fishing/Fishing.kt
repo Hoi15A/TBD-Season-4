@@ -1,36 +1,31 @@
 package fishing
 
 import chat.Formatting.allTags
-import util.Keys.FISH_RARITY
-import plugin
 import item.ItemRarity
 import item.ItemType
 import item.SubRarity
-import util.Sounds
 import logger
-
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
-
 import org.bukkit.*
 import org.bukkit.entity.*
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import plugin
 import util.Keys.FISH_IS_OBFUSCATED
 import util.Keys.FISH_IS_SHADOW
 import util.Keys.FISH_IS_SHINY
+import util.Keys.FISH_RARITY
+import util.Sounds
 import util.startsWithVowel
-
 import java.time.Duration
-
-import kotlin.collections.ArrayList
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
-import net.kyori.adventure.text.Component
-import org.bukkit.inventory.ItemStack
 
 object Fishing {
     fun catchFish(
@@ -43,41 +38,58 @@ object Fishing {
         val fishRarity = forcedFishRarity ?: FishRarity.getRandomRarity()
         val subRarity = forcedFishSubRarity ?: SubRarity.getRandomSubRarity()
 
-        val caughtByLore =
-            if (fishRarity.props.showCatcher || subRarity != SubRarity.NONE) allTags.deserialize("<reset>${if (subRarity == SubRarity.SHADOW) "<#0><shadow:white>" else "<white>"}${if (subRarity == SubRarity.OBFUSCATED) "<font:alt>" else ""}Caught by ${if (subRarity == SubRarity.SHADOW) "<#0><shadow:yellow>" else "<yellow>"}${player.name}${if (subRarity == SubRarity.SHADOW) "<#0><shadow:white>" else "<white>"}${if (subRarity == SubRarity.OBFUSCATED) "</font:alt>" else ""}.").decoration(TextDecoration.ITALIC, false) else null
         val fishMeta = item.itemStack.itemMeta
-        fishMeta.displayName(
-            allTags.deserialize("${if (subRarity == SubRarity.SHADOW) "<#0><shadow:${fishRarity.itemRarity.colourHex}>" else "<${fishRarity.itemRarity.colourHex}>"}${if(subRarity == SubRarity.OBFUSCATED) "<font:alt>" else ""}${item.name}").decoration(TextDecoration.ITALIC, false)
-        )
-        fishMeta.lore(
-            if (caughtByLore == null) {
-                listOf(
-                    allTags.deserialize("<reset><white>${fishRarity.itemRarity.rarityGlyph}${ItemType.FISH.typeGlyph}")
-                        .decoration(TextDecoration.ITALIC, false)
-                )
-            } else {
-                listOf(
-                    allTags.deserialize("<reset><white>${fishRarity.itemRarity.rarityGlyph}${if (subRarity != SubRarity.NONE) "<reset><white>${subRarity.subRarityGlyph}${ItemType.FISH.typeGlyph}" else "<reset><white>${ItemType.FISH.typeGlyph}"}")
-                        .decoration(TextDecoration.ITALIC, false), caughtByLore
-                )
+        val lore = mutableListOf<String>()
+
+        // The number of fish at this point is always one lower than the one shown in the statistics screen.
+        val fishNumber = player.getStatistic(Statistic.FISH_CAUGHT) + 1
+
+        lore += "<reset><!i><white>${fishRarity.itemRarity.rarityGlyph}${if (subRarity != SubRarity.NONE) subRarity.subRarityGlyph else ""}${ItemType.FISH.typeGlyph}"
+
+        if (subRarity != SubRarity.NONE) {
+            when (subRarity) {
+                SubRarity.SHINY -> {
+                    lore += "<!i><white>Caught by <yellow>${player.name}<white>."
+                    lore += "<!i><white>Fish #${fishNumber}"
+
+                    fishMeta.setEnchantmentGlintOverride(true)
+                    fishMeta.persistentDataContainer.set(FISH_IS_SHINY, PersistentDataType.BOOLEAN, true)
+                    shinyEffect(item)
+                }
+
+                SubRarity.SHADOW -> {
+                    lore += "<!i><#0><shadow:white>Caught by <shadow:yellow>${player.name}<shadow:white>."
+                    lore += "<!i><#0><shadow:white>Fish #${fishNumber}"
+
+                    fishMeta.persistentDataContainer.set(FISH_IS_SHADOW, PersistentDataType.BOOLEAN, true)
+                    shadowEffect(item)
+                }
+
+                SubRarity.OBFUSCATED -> {
+                    lore += "<!i><white><font:alt>Caught by <yellow>${player.name}</font:alt>."
+                    lore += "<!i><white><font:alt>Fish</font:alt> #${fishNumber}"
+
+                    fishMeta.persistentDataContainer.set(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN, true)
+                    obfuscatedEffect(item)
+                }
+
+                else -> {}
             }
-        )
-        when(subRarity) {
-            SubRarity.NONE -> {}
-            SubRarity.SHINY -> {
-                fishMeta.setEnchantmentGlintOverride(true)
-                fishMeta.persistentDataContainer.set(FISH_IS_SHINY, PersistentDataType.BOOLEAN, true)
-                shinyEffect(item)
+        } else {
+            if (fishRarity.props.showCatcher) {
+                lore += "<!i><white>Caught by <yellow>${player.name}<white>."
             }
-            SubRarity.SHADOW -> {
-                fishMeta.persistentDataContainer.set(FISH_IS_SHADOW, PersistentDataType.BOOLEAN, true)
-                shadowEffect(item)
-            }
-            SubRarity.OBFUSCATED -> {
-                fishMeta.persistentDataContainer.set(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN, true)
-                obfuscatedEffect(item)
+            if (fishRarity.props.showFishNumber) {
+                lore += "<!i><white>Fish #${fishNumber}"
             }
         }
+        fishMeta.displayName(
+            allTags.deserialize("${if (subRarity == SubRarity.SHADOW) "<#0><shadow:${fishRarity.itemRarity.colourHex}>" else "<${fishRarity.itemRarity.colourHex}>"}${if (subRarity == SubRarity.OBFUSCATED) "<font:alt>" else ""}${item.name}")
+                .decoration(TextDecoration.ITALIC, false)
+        )
+        fishMeta.lore(
+            lore.map { allTags.deserialize(it) }
+        )
         fishMeta.persistentDataContainer.set(FISH_RARITY, PersistentDataType.STRING, fishRarity.name)
         item.itemStack.setItemMeta(fishMeta)
 
@@ -89,7 +101,14 @@ object Fishing {
         if (fishRarity.props.sendGlobalMsg || subRarity != SubRarity.NONE) catchText(player, item, fishRarity)
         if (fishRarity.props.sendGlobalTitle) catchTitle(player, item, fishRarity)
         if (fishRarity.props.isAnimated) catchAnimation(player, item, location.add(0.0, 1.75, 0.0), fishRarity)
-        if (fishRarity in listOf(FishRarity.LEGENDARY, FishRarity.MYTHIC, FishRarity.UNREAL, FishRarity.TRANSCENDENT, FishRarity.CELESTIAL)) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
+        if (fishRarity in listOf(
+                FishRarity.LEGENDARY,
+                FishRarity.MYTHIC,
+                FishRarity.UNREAL,
+                FishRarity.TRANSCENDENT,
+                FishRarity.CELESTIAL
+            )
+        ) logger.info("(FISHING) ${player.name} caught $fishRarity ${item.name}.")
         if (subRarity != SubRarity.NONE) logger.info("(FISHING) ${player.name} caught $subRarity ${item.name}.")
 
         if (FishingSocial.isActive()) {
@@ -135,6 +154,7 @@ object Fishing {
                     false
                 )
             }
+
             FishRarity.EPIC -> {
                 catcher.playSound(Sounds.EPIC_CATCH)
                 firework(
@@ -147,6 +167,7 @@ object Fishing {
                 )
                 epicEffect(location)
             }
+
             FishRarity.LEGENDARY -> {
                 Bukkit.getServer().playSound(Sounds.LEGENDARY_CATCH)
                 for (i in 0..2) {
@@ -165,10 +186,12 @@ object Fishing {
                 }
                 legendaryEffect(location)
             }
+
             FishRarity.MYTHIC -> {
                 Bukkit.getServer().playSound(Sounds.MYTHIC_CATCH)
                 mythicEffect(location)
             }
+
             FishRarity.UNREAL -> {
                 val server = Bukkit.getServer()
                 server.playSound(Sounds.UNREAL_CATCH)
@@ -232,6 +255,7 @@ object Fishing {
                     }.runTaskLater(plugin, i * 15L)
                 }
             }
+
             FishRarity.TRANSCENDENT -> {
                 Bukkit.getServer().playSound(Sounds.TRANSCENDENT_CATCH)
                 Bukkit.getServer().playSound(Sounds.TRANSCENDENT_CATCH_SPAWN)
@@ -259,7 +283,9 @@ object Fishing {
                         if (time % 5 == 0) {
                             location.world.playSound(location, "entity.blaze.ambient", 2f, 0.75f)
                             val origin = rotated.random().clone()
-                            val direction = Vector(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiply(12.0)
+                            val direction =
+                                Vector(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize()
+                                    .multiply(12.0)
                             val startLoc = location.clone().add(origin)
                             val steps = 16
                             val delta = direction.clone().multiply(1.0 / steps)
@@ -274,7 +300,14 @@ object Fishing {
                                     true
                                 )
                             }
-                            firework(startLoc.clone().add(direction), flicker = false, trail = false, fishRarity.itemRarity.colour, FireworkEffect.Type.BURST, variedVelocity = false)
+                            firework(
+                                startLoc.clone().add(direction),
+                                flicker = false,
+                                trail = false,
+                                fishRarity.itemRarity.colour,
+                                FireworkEffect.Type.BURST,
+                                variedVelocity = false
+                            )
                         }
                         angle += Math.toRadians(4.0)
                     }
@@ -282,19 +315,34 @@ object Fishing {
 
                 }.runTaskTimer(plugin, 0L, 2L)
             }
+
             FishRarity.CELESTIAL -> {
                 Bukkit.getServer().playSound(Sounds.CELESTIAL_CATCH)
                 Bukkit.getServer().playSound(Sounds.CELESTIAL_CATCH_SPAWN)
-                firework(location, flicker = true, trail = true, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL_LARGE, variedVelocity = false)
+                firework(
+                    location,
+                    flicker = true,
+                    trail = true,
+                    fishRarity.itemRarity.colour,
+                    FireworkEffect.Type.BALL_LARGE,
+                    variedVelocity = false
+                )
                 var riseHeight = location.blockY
                 object : BukkitRunnable() {
                     override fun run() {
-                        if(riseHeight < location.blockY + 100) {
-                            firework(Location(location.world, location.x, riseHeight.toDouble(), location.z), flicker = false, trail = false, Color.GRAY, FireworkEffect.Type.BALL, variedVelocity = false)
+                        if (riseHeight < location.blockY + 100) {
+                            firework(
+                                Location(location.world, location.x, riseHeight.toDouble(), location.z),
+                                flicker = false,
+                                trail = false,
+                                Color.GRAY,
+                                FireworkEffect.Type.BALL,
+                                variedVelocity = false
+                            )
                             riseHeight += 2
                         } else {
                             cancel()
-                            for(i in 0..3) {
+                            for (i in 0..3) {
                                 location.world.spawnParticle(
                                     Particle.CLOUD,
                                     location.clone().add(0.0, 100.0, 0.0),
@@ -314,7 +362,7 @@ object Fishing {
                                     1, 0.0, 0.0, 0.0, 0.0, null, true
                                 )
                             }
-                            for(i in 0..39) {
+                            for (i in 0..39) {
                                 object : BukkitRunnable() {
                                     override fun run() {
                                         val randomX = Random.nextDouble(location.x - 20.0, location.x + 20.0)
@@ -322,14 +370,38 @@ object Fishing {
                                         var descendHeight = location.blockY + 100
                                         object : BukkitRunnable() {
                                             override fun run() {
-                                                if(descendHeight > location.blockY) {
-                                                    firework(Location(location.world, randomX, descendHeight.toDouble(), randomZ), flicker = false, trail = false, fishRarity.itemRarity.colour, FireworkEffect.Type.BALL, variedVelocity = false)
+                                                if (descendHeight > location.blockY) {
+                                                    firework(
+                                                        Location(
+                                                            location.world,
+                                                            randomX,
+                                                            descendHeight.toDouble(),
+                                                            randomZ
+                                                        ),
+                                                        flicker = false,
+                                                        trail = false,
+                                                        fishRarity.itemRarity.colour,
+                                                        FireworkEffect.Type.BALL,
+                                                        variedVelocity = false
+                                                    )
                                                     descendHeight -= 2
                                                 } else {
-                                                    location.world.playSound(Location(location.world, randomX, descendHeight.toDouble(), randomZ), "item.totem.use", 1f, 0.75f)
+                                                    location.world.playSound(
+                                                        Location(
+                                                            location.world,
+                                                            randomX,
+                                                            descendHeight.toDouble(),
+                                                            randomZ
+                                                        ), "item.totem.use", 1f, 0.75f
+                                                    )
                                                     location.world.spawnParticle(
                                                         Particle.TOTEM_OF_UNDYING,
-                                                        Location(location.world, randomX, descendHeight.toDouble(), randomZ),
+                                                        Location(
+                                                            location.world,
+                                                            randomX,
+                                                            descendHeight.toDouble(),
+                                                            randomZ
+                                                        ),
                                                         250, 0.0, 0.0, 0.0, 0.75, null, true
                                                     )
                                                     cancel()
@@ -343,7 +415,9 @@ object Fishing {
                     }
                 }.runTaskTimer(plugin, 0L, 1L)
             }
-            else -> { /* do nothing */ }
+
+            else -> { /* do nothing */
+            }
         }
     }
 
@@ -353,11 +427,11 @@ object Fishing {
         val b = a / phi
         val c = a * phi
         return listOf(
-            Vector( a,  a,  a), Vector( a,  a, -a), Vector( a, -a,  a), Vector( a, -a, -a),
-            Vector(-a,  a,  a), Vector(-a,  a, -a), Vector(-a, -a,  a), Vector(-a, -a, -a),
-            Vector( 0.0,  b,  c), Vector( 0.0,  b, -c), Vector( 0.0, -b,  c), Vector( 0.0, -b, -c),
-            Vector( b,  c, 0.0), Vector( b, -c, 0.0), Vector(-b,  c, 0.0), Vector(-b, -c, 0.0),
-            Vector( c, 0.0,  b), Vector( c, 0.0, -b), Vector(-c, 0.0,  b), Vector(-c, 0.0, -b)
+            Vector(a, a, a), Vector(a, a, -a), Vector(a, -a, a), Vector(a, -a, -a),
+            Vector(-a, a, a), Vector(-a, a, -a), Vector(-a, -a, a), Vector(-a, -a, -a),
+            Vector(0.0, b, c), Vector(0.0, b, -c), Vector(0.0, -b, c), Vector(0.0, -b, -c),
+            Vector(b, c, 0.0), Vector(b, -c, 0.0), Vector(-b, c, 0.0), Vector(-b, -c, 0.0),
+            Vector(c, 0.0, b), Vector(c, 0.0, -b), Vector(-c, 0.0, b), Vector(-c, 0.0, -b)
         ).map { it.multiply(r) }
     }
 
@@ -542,14 +616,14 @@ object Fishing {
         object : BukkitRunnable() {
             var i = 0
             override fun run() {
-                if(i % 2 == 0) {
+                if (i % 2 == 0) {
                     item.location.world.spawnParticle(
                         Particle.ELECTRIC_SPARK,
                         item.location.clone().add(0.0, 0.5, 0.0),
                         10, 0.25, 0.25, 0.25, 0.0
                     )
                 }
-                if(i >= 100 || item.isDead) {
+                if (i >= 100 || item.isDead) {
                     cancel()
                 }
                 i++
@@ -562,14 +636,14 @@ object Fishing {
         object : BukkitRunnable() {
             var i = 0
             override fun run() {
-                if(i % 2 == 0) {
+                if (i % 2 == 0) {
                     item.location.world.spawnParticle(
                         Particle.SMOKE,
                         item.location.clone().add(0.0, 0.5, 0.0),
                         20, 0.0, 0.0, 0.0, 0.05
                     )
                 }
-                if(i >= 100 || item.isDead) {
+                if (i >= 100 || item.isDead) {
                     cancel()
                 }
                 i++
@@ -582,14 +656,14 @@ object Fishing {
         object : BukkitRunnable() {
             var i = 0
             override fun run() {
-                if(i % 2 == 0) {
+                if (i % 2 == 0) {
                     item.location.world.spawnParticle(
                         Particle.ENCHANT,
                         item.location.clone().add(0.0, 0.5, 0.0),
                         5, 0.25, 0.25, 0.25, 0.1
                     )
                 }
-                if(i >= 500 || item.isDead) {
+                if (i >= 500 || item.isDead) {
                     cancel()
                 }
                 i++
@@ -636,10 +710,15 @@ object Fishing {
     }
 
     fun ItemStack.hasSubRarity(): Boolean {
-        val isShiny = persistentDataContainer.get(FISH_IS_SHINY, PersistentDataType.BOOLEAN) ?: false
-        val isShadow = persistentDataContainer.get(FISH_IS_SHADOW, PersistentDataType.BOOLEAN) ?: false
-        val isObfuscated = persistentDataContainer.get(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN) ?: false
+        return getSubRarity() != SubRarity.NONE
+    }
 
-        return isShiny || isShadow || isObfuscated
+    fun ItemStack.getSubRarity(): SubRarity {
+        return when {
+            persistentDataContainer.get(FISH_IS_SHINY, PersistentDataType.BOOLEAN) == true -> SubRarity.SHINY
+            persistentDataContainer.get(FISH_IS_SHADOW, PersistentDataType.BOOLEAN) == true -> SubRarity.SHADOW
+            persistentDataContainer.get(FISH_IS_OBFUSCATED, PersistentDataType.BOOLEAN) == true -> SubRarity.OBFUSCATED
+            else -> SubRarity.NONE
+        }
     }
 }

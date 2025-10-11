@@ -1,7 +1,10 @@
-package event
+package event.block
 
 import fishing.FishRarity
+import fishing.Fishing.getSubRarity
 import fishing.Fishing.hasSubRarity
+import item.SubRarity
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.event.EventHandler
@@ -27,16 +30,28 @@ class FurnaceSmelt : Listener {
     private fun copyFishData(event: FurnaceSmeltEvent, fishRarity: FishRarity) {
         val resultMeta = event.result.itemMeta
         event.source.persistentDataContainer.copyTo(resultMeta.persistentDataContainer, true)
-        resultMeta.displayName(
-            event.result.effectiveName().color(TextColor.fromHexString(fishRarity.itemRarity.colourHex))
-                .decoration(TextDecoration.ITALIC, false)
-        )
-        resultMeta.lore(event.source.lore())
-        var glint = false
-        if (event.source.itemMeta.hasEnchantmentGlintOverride()) {
-            glint = event.source.itemMeta.enchantmentGlintOverride
+        val subRarity = event.source.getSubRarity()
+        var nameComponent = event.result.effectiveName().color(TextColor.fromHexString(fishRarity.itemRarity.colourHex))
+            .decoration(TextDecoration.ITALIC, false)
+
+        when (subRarity) {
+            SubRarity.SHINY -> {
+                resultMeta.setEnchantmentGlintOverride(true)
+            }
+
+            SubRarity.SHADOW -> {
+                nameComponent = nameComponent.color(TextColor.fromHexString("#000000")).shadowColor(event.source.effectiveName().children()[0].shadowColor())
+            }
+
+            SubRarity.OBFUSCATED -> {
+                nameComponent = nameComponent.font(Key.key("alt"))
+            }
+
+            else -> {}
         }
-        resultMeta.setEnchantmentGlintOverride(glint)
+
+        resultMeta.displayName(nameComponent)
+        resultMeta.lore(event.source.lore())
         event.result.setItemMeta(resultMeta)
     }
 }

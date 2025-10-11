@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.potion.PotionEffectType
 import util.Keys.DIVINITY_CHAINS
 import kotlin.random.Random
 
@@ -40,7 +39,7 @@ class DeathEvent: Listener {
         val newArgs = mutableListOf<TranslationArgument>()
         component.arguments().forEach {
             val str = plainText().serialize(it.asComponent())
-            if ((str == e.player.name && (e.player.isInvisible || e.player.name == "Byrtrum")) || (str == e.player.killer?.name && (e.player.killer?.isInvisible == true || e.player.killer?.name == "Byrtrum"))) {
+            if ((str == e.player.name && (e.player.isInvisible || (e.player.name == "Byrtrum") || e.player.killer?.name == "fish_25")) || (str == e.player.killer?.name && (e.player.killer?.isInvisible == true || (e.player.killer?.name == "Byrtrum") || e.player.killer?.name == "fish_25"))) {
                 newArgs.add(TranslationArgument.component(
                     Formatting.allTags.deserialize(
                         "<hover:show_text:'Made you look.'><obfuscated>${"*".repeat(Random.nextInt(4, 16))}</obfuscated></hover>"
@@ -50,12 +49,8 @@ class DeathEvent: Listener {
                 newArgs.add(it)
             }
         }
-        if(e.player.killer?.name == "Byrtrum") {
-            if(e.player.killer?.hasPotionEffect(PotionEffectType.INVISIBILITY) == true) {
-                e.deathMessage(Formatting.allTags.deserialize(Formatting.DIVINATED_DEATH_MESSAGES.random().replace("%s", e.player.name)))
-            } else {
-                e.deathMessage(Formatting.allTags.deserialize(Formatting.DIVINE_DEATH_MESSAGES.random().replace("%s", e.player.name)))
-            }
+        if(e.player.killer?.name == "Byrtrum" || e.player.killer?.name == "fish_25") {
+            e.deathMessage(Formatting.allTags.deserialize(Formatting.DIVINE_DEATH_MESSAGES.random().replace("%s", e.player.name)))
             return
         }
         val newComponent = component.arguments(newArgs)

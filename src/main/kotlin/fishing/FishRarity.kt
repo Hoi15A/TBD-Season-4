@@ -12,13 +12,15 @@ import kotlin.random.Random
  * @property sendGlobalMsg If a catch of this rarity should send a global message
  * @property sendGlobalTitle If a catch of this rarity should send a global title
  * @property retainData If ItemMeta should be retained on cooking for this rarity
+ * @property showFishNumber If the number of fish caught should be shown in the lore
  */
 data class RarityProperties(
     val showCatcher: Boolean = false,
     val isAnimated: Boolean = false,
     val sendGlobalMsg: Boolean = false,
     val sendGlobalTitle: Boolean = false,
-    val retainData: Boolean = false
+    val retainData: Boolean = false,
+    val showFishNumber: Boolean = false,
 )
 
 /**
@@ -31,42 +33,62 @@ enum class FishRarity(val weight: Double, val itemRarity: ItemRarity, val props:
     UNCOMMON(34.0, ItemRarity.UNCOMMON, RarityProperties()),
     RARE(12.0, ItemRarity.RARE, RarityProperties(isAnimated = true)),
     EPIC(5.0, ItemRarity.EPIC, RarityProperties(isAnimated = true, sendGlobalMsg = true)),
-    LEGENDARY(1.0, ItemRarity.LEGENDARY, RarityProperties(
-        isAnimated = true,
-        sendGlobalMsg = true,
-        showCatcher = true,
-        retainData = true)),
-    MYTHIC(0.2, ItemRarity.MYTHIC, RarityProperties(
-        isAnimated = true,
-        sendGlobalMsg = true,
-        sendGlobalTitle = true,
-        showCatcher = true,
-        retainData = true)),
-    UNREAL(0.05, ItemRarity.UNREAL, RarityProperties(
-        isAnimated = true,
-        sendGlobalMsg = true,
-        sendGlobalTitle = true,
-        showCatcher = true,
-        retainData = true)),
-    SPECIAL(0.0, ItemRarity.SPECIAL, RarityProperties(
-        sendGlobalMsg = true,
-        sendGlobalTitle = true,
-        showCatcher = true,
-        retainData = true)),
-    TRANSCENDENT(0.025, ItemRarity.TRANSCENDENT, RarityProperties(
-        isAnimated = true,
-        sendGlobalMsg = true,
-        sendGlobalTitle = true,
-        showCatcher = true,
-        retainData = true
-    )),
-    CELESTIAL(0.0125, ItemRarity.CELESTIAL, RarityProperties(
-        isAnimated = true,
-        sendGlobalMsg = true,
-        sendGlobalTitle = true,
-        showCatcher = true,
-        retainData = true
-    ));
+    LEGENDARY(
+        1.0, ItemRarity.LEGENDARY, RarityProperties(
+            isAnimated = true,
+            sendGlobalMsg = true,
+            showCatcher = true,
+            retainData = true
+        )
+    ),
+    MYTHIC(
+        0.2, ItemRarity.MYTHIC, RarityProperties(
+            isAnimated = true,
+            sendGlobalMsg = true,
+            sendGlobalTitle = true,
+            showCatcher = true,
+            retainData = true
+        )
+    ),
+    UNREAL(
+        0.05, ItemRarity.UNREAL, RarityProperties(
+            isAnimated = true,
+            sendGlobalMsg = true,
+            sendGlobalTitle = true,
+            showCatcher = true,
+            retainData = true,
+            showFishNumber = true
+        )
+    ),
+    SPECIAL(
+        0.0, ItemRarity.SPECIAL, RarityProperties(
+            sendGlobalMsg = true,
+            sendGlobalTitle = true,
+            showCatcher = true,
+            retainData = true,
+            showFishNumber = true
+        )
+    ),
+    TRANSCENDENT(
+        0.025, ItemRarity.TRANSCENDENT, RarityProperties(
+            isAnimated = true,
+            sendGlobalMsg = true,
+            sendGlobalTitle = true,
+            showCatcher = true,
+            retainData = true,
+            showFishNumber = true
+        )
+    ),
+    CELESTIAL(
+        0.0125, ItemRarity.CELESTIAL, RarityProperties(
+            isAnimated = true,
+            sendGlobalMsg = true,
+            sendGlobalTitle = true,
+            showCatcher = true,
+            retainData = true,
+            showFishNumber = true
+        )
+    );
 
     companion object {
         fun getRandomRarity(): FishRarity {

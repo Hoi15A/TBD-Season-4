@@ -23,6 +23,7 @@ import org.incendo.cloud.annotations.processing.CommandContainer
 import plugin
 import util.Keys.TRUE_EYE
 import util.secondsToTicks
+import util.ui.MemoryFilter
 import java.time.Duration
 import java.util.*
 import kotlin.math.cos
@@ -85,6 +86,8 @@ class TrueEye {
                         position.world.spawnParticle(Particle.END_ROD, position, 300, 0.0, 0.0, 0.0, 1.0, null, true)
                         Fishing.shinyEffect(trueEyeEntity)
                         Bukkit.getServer().playSound(Sounds.TRUE_EYE_SPAWN)
+
+                        Memory.saveMemory(trueEye, MemoryFilter.SEASON_FOUR)
 
                         cancel()
                         return

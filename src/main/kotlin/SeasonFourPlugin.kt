@@ -1,8 +1,11 @@
 import chat.VisualChat
-import event.*
+import com.noxcrew.interfaces.InterfacesListeners
+import event.block.*
+import event.entity.*
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import lore.Divinity
+import lore.MannequinMech
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.incendo.cloud.annotations.AnnotationParser
@@ -28,6 +31,8 @@ class SeasonFourPlugin : JavaPlugin() {
         registerCommands()
         registerMessengers()
         VisualChat.clearChatEntities()
+        InterfacesListeners.install(plugin)
+        MannequinMech.removeAllMannequins()
     }
 
     override fun onDisable() {
@@ -35,10 +40,10 @@ class SeasonFourPlugin : JavaPlugin() {
         Bukkit.getServer().scoreboardManager.mainScoreboard.teams.forEach { team -> if(team.name.contains("tbd.true_eye.")) team.unregister() }
         VisualChat.clearChatEntities()
         Divinity.clearChains()
+        MannequinMech.removeAllMannequins()
     }
 
     private fun setupEvents() {
-        server.pluginManager.registerEvents(ServerLinks(config), this)
         server.pluginManager.registerEvents(PlayerFish(), this)
         server.pluginManager.registerEvents(PlayerJoin(config), this)
         server.pluginManager.registerEvents(PlayerQuit(), this)
@@ -51,6 +56,12 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(EnderEyeInteract(), this)
         server.pluginManager.registerEvents(PlayerItemConsume(), this)
         server.pluginManager.registerEvents(PlayerMovement(), this)
+        server.pluginManager.registerEvents(PortalFrameInteract(), this)
+        server.pluginManager.registerEvents(DragonDeathEvent(), this)
+        server.pluginManager.registerEvents(PrepareAnvilListener(), this)
+        server.pluginManager.registerEvents(BlockPlace(), this)
+        server.pluginManager.registerEvents(PlayerCraft(), this)
+        server.pluginManager.registerEvents(CrafterListener(), this)
     }
 
     private fun registerCommands() {

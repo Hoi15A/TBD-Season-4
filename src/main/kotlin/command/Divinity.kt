@@ -2,9 +2,11 @@ package command
 
 import chat.Formatting
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import lore.Divinity
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
+import org.incendo.cloud.annotations.Argument
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
@@ -46,6 +48,18 @@ class Divinity {
                 player.playSound(DIVINIFY_ITEM)
             }
         }
+    }
+
+    @Command("chain <player>")
+    @Permission("tbd.command.chain")
+    fun debugChain(css: CommandSourceStack, @Argument("player") player: Player) {
+        Divinity.chainPlayer(player)
+    }
+
+    @Command("unchain <player>")
+    @Permission("tbd.command.chain")
+    fun debugUnchain(css: CommandSourceStack, @Argument("player") player: Player) {
+        Divinity.unchainPlayer(player)
     }
 
     companion object {

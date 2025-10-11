@@ -35,7 +35,12 @@ object Sounds {
     val DIVINIFICATION_DEATH = sound(key("entity.breeze.wind_burst"), Source.MASTER, 10f, 0.5f)
     val DIVINIFICATION_BEAM_EXTINGUISH = sound(key("block.fire.extinguish"), Source.MASTER, 10f, 0f)
     val FRAME_EYE_BREAK = sound(key("entity.ender_eye.death"), Source.BLOCK, 1f, 0.75f)
+    val FRAME_BREAK = sound(key("block.glass.break"), Source.BLOCK, 1f, 0.75f)
     val PLING = sound(key("minecraft:block.note_block.pling"), Source.PLAYER, 0.5f, 1f)
     val ERROR_DIDGERIDOO = sound(key("minecraft:block.note_block.didgeridoo"), Source.PLAYER, 0.5f, 1f)
     val FISHING_SOCIAL = sound(key("entity.fishing_bobber.splash"), Source.MASTER, 0.5f, 1.5f)
+    val INTERFACE_INTERACT = sound(key("ui.button.click"), Source.MASTER, 0.5f, 1f)
+    val MEMORY_SAVE = sound(key("entity.evoker.cast_spell"), Source.MASTER, 1f, 1f)
+    val MEMORY_ALREADY_EXISTS = sound(key("entity.allay.ambient_with_item"), Source.MASTER, 1f, 1f)
+    val MEMORY_INVALID = sound(key("entity.allay.ambient_without_item"), Source.MASTER, 1f, 1f)
 }

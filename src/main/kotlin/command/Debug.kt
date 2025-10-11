@@ -1,23 +1,30 @@
 package command
 
+import chat.Formatting
 import fishing.FishRarity
 import fishing.Fishing
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import item.SubRarity
+import item.treasurebag.BagType
+import item.treasurebag.TreasureBag
 import logger
-import lore.Divinity
 import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.incendo.cloud.annotations.Argument
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
 import plugin
+import util.Keys
+import util.isHoldingItemInMainHand
+import java.io.File
 
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
@@ -63,15 +70,62 @@ class Debug {
         }
     }
 
-    @Command("chain <player>")
+    @Command("debug treasure_bag <type>")
     @Permission("tbd.command.debug")
-    fun debugChain(css: CommandSourceStack, @Argument("player") player: Player) {
-        Divinity.chainPlayer(player)
+    fun debugTreasureBag(css: CommandSourceStack, @Argument("type") type: BagType) {
+        if(css.sender is Player) {
+            val player = css.sender as Player
+            player.inventory.addItem(TreasureBag.create(type))
+        }
     }
 
-    @Command("unchain <player>")
+    @Command("debug migrateMemento")
     @Permission("tbd.command.debug")
-    fun debugUnchain(css: CommandSourceStack, @Argument("player") player: Player) {
-        Divinity.unchainPlayer(player)
+    fun migrateMemento(css: CommandSourceStack) {
+        val player = css.sender as Player
+        if(!player.isHoldingItemInMainHand()) {
+            player.sendMessage(Formatting.allTags.deserialize("<red>You need to be holding an item to migrate memento data.</red>"))
+            return
+        }
+
+        val itemStack = player.inventory.itemInMainHand
+        val legacyKey = NamespacedKey(plugin, "pdc.type.memento_type")
+
+        if(!itemStack.persistentDataContainer.has(legacyKey)) {
+            player.sendMessage(Formatting.allTags.deserialize("<red>This item does not have legacy memento data.</red>"))
+            return
+        }
+
+        val value = itemStack.persistentDataContainer.get(legacyKey, PersistentDataType.STRING)!!
+        itemStack.editPersistentDataContainer {
+            it.remove(legacyKey)
+            it.set(Keys.MEMENTO_TYPE, PersistentDataType.STRING, value)
+        }
+        player.sendMessage(Formatting.allTags.deserialize("<green>Memento data migrated successfully!</green>"))
+    }
+
+    @Command("debug scavengerhunt create")
+    @Permission("tbd.command.debug.seb")
+    fun createScavengerHunt(css: CommandSourceStack) {
+        val file = File("plugins/tbdseason4/scavengerhunt.flag")
+
+        if (file.exists().not()) {
+            file.createNewFile()
+            css.sender.sendMessage(Formatting.allTags.deserialize("<green>Scavenger hunt file created.</green>"))
+        } else {
+            css.sender.sendMessage(Formatting.allTags.deserialize("<red>Scavenger hunt file already exists.</red>"))
+        }
+    }
+
+    @Command("debug scavengerhunt check")
+    @Permission("tbd.command.debug.seb")
+    fun checkScavengerHunt(css: CommandSourceStack) {
+        val file = File("plugins/tbdseason4/scavengerhunt.flag")
+
+        if (file.exists().not()) {
+            css.sender.sendMessage(Formatting.allTags.deserialize("<green>Scavenger hunt file doesn't exist.</green>"))
+        } else {
+            css.sender.sendMessage(Formatting.allTags.deserialize("<red>Scavenger hunt file already exists.</red>"))
+        }
     }
 }

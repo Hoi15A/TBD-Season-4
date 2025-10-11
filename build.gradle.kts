@@ -20,6 +20,7 @@ plugins {
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
     id("xyz.jpenilla.run-paper") version "2.3.1" // Adds runServer and runMojangMappedServer tasks for testing
     id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.2.0" // Generates plugin.yml based on the Gradle config
+    id("com.apollographql.apollo3") version "3.8.2" // GraphQL
 }
 
 group = "net.tbdsmp"
@@ -35,7 +36,7 @@ bukkitPluginYaml {
         "derNiklaas",
         "Sebiann"
     )
-    apiVersion = "1.21.7"
+    apiVersion = "1.21.8"
 }
 
 kotlin {
@@ -50,11 +51,15 @@ repositories {
         name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
+    maven {
+        name = "noxcrewMavenPublic"
+        url = uri("https://maven.noxcrew.com/public")
+    }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
-    paperweight.paperDevBundle("1.21.7-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
 
     implementation("org.incendo:cloud-paper:2.0.0-beta.10")
     implementation("org.incendo:cloud-annotations:2.0.0")
@@ -63,8 +68,19 @@ dependencies {
 
     implementation("org.spongepowered:configurate-yaml:4.2.0")
     implementation("org.spongepowered:configurate-extra-kotlin:4.2.0")
-
     implementation("fr.mrmicky:fastboard:2.1.5")
+
+    implementation("com.noxcrew.interfaces:interfaces:2.0.1-SNAPSHOT")
+
+    implementation("com.apollographql.apollo3:apollo-runtime:3.8.2")
+}
+
+apollo {
+    service("mcc") {
+        packageName.set("net.tbdsmp.tbdseason4")
+        schemaFile.set(file("src/main/graphql/schema.graphqls"))
+        srcDir("src/main/graphql")
+    }
 }
 
 tasks {

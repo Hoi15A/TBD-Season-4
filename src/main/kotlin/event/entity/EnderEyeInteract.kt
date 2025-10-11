@@ -1,8 +1,9 @@
-package event.player
+package event.entity
 
 import chat.Formatting
 import item.ItemRarity
 import item.ItemType
+import item.treasurebag.BagItem
 import java.net.URI
 import java.util.UUID
 import org.bukkit.Location
@@ -27,6 +28,7 @@ import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import util.Keys
+import util.ui.MemoryFilter
 
 class EnderEyeInteract: Listener {
     @EventHandler
@@ -58,6 +60,7 @@ class EnderEyeInteract: Listener {
 
             val portalFrameState = clickedBlock.blockData as EndPortalFrame
             if(portalFrameState.hasEye()) return
+            if(item.asOne() == BagItem.DRAGON_EYE.itemStack.asOne()) return
             giveMemento(event)
         }
     }
@@ -110,10 +113,9 @@ class EnderEyeInteract: Listener {
         val baseLore = listOf("<white><!i>${ItemRarity.EPIC.rarityGlyph}${ItemType.MEMENTO.typeGlyph}", "<!i><yellow>You feel a strange energy emerging from within.").map { Formatting.allTags.deserialize(it) }
         val obtainedLore = listOf("", "<!i><grey>Placed by: <white>${event.player.name}").map { Formatting.allTags.deserialize(it) }
         val newLore = baseLore + trueEye.itemMeta.lore()!![2] + obtainedLore
-
         val memento = ItemStack(Material.PLAYER_HEAD)
         val mementoMeta = memento.itemMeta as SkullMeta
-        val mementoProfile = Bukkit.createProfile(UUID.randomUUID())
+        val mementoProfile = Bukkit.createProfile(Bukkit.getOfflinePlayer(UUID.fromString("c4400882-3580-45da-a6a0-ec98865a5435")).uniqueId)
         val mementoTexture = mementoProfile.textures
         mementoTexture.skin = URI("http://textures.minecraft.net/texture/d39f1c0ddcf53833bac5fbf57715f7c253eefd2872ff27e4a893be30529bc685").toURL()
         mementoProfile.setTextures(mementoTexture)
@@ -122,7 +124,7 @@ class EnderEyeInteract: Listener {
         mementoMeta.displayName(Formatting.allTags.deserialize("<!i><${ItemRarity.EPIC.colourHex}>Remnant of a True Eye"))
         mementoMeta.persistentDataContainer.set(Keys.MEMENTO_TYPE, PersistentDataType.STRING, "true_eye_memento")
         memento.itemMeta = mementoMeta
-
         player.inventory.addItem(memento)
+        Memory.saveMemory(memento, MemoryFilter.SEASON_FOUR)
     }
 }
