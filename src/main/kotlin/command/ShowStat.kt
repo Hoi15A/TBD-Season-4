@@ -89,7 +89,6 @@ class ShowStat {
                 val pages = sorted.chunked(pageSize)
                 if (pageIndex <= pages.lastIndex) {
                     val page = pages[pageIndex].toMutableList()
-                    // /echo <gradient:#FDCFFA:#D78FEE>Mine Block <gradient:#9B5DE0:#4E56C0>(Mycelium) <#4E56C0>[<#FDCFFA>5/7<#4E56C0>]
 
                     val title = allTags.deserialize("<shadow:black><gradient:#FDCFFA:#D78FEE>${snakeCaseToSpaced(stat.name)}${
                         when (stat.type) {
