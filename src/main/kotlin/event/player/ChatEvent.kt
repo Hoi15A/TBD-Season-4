@@ -2,6 +2,7 @@ package event.player
 
 import plugin
 import chat.GlobalRenderer
+import chat.Gork
 import chat.VisualChat
 
 import io.papermc.paper.event.player.AsyncChatEvent
@@ -15,5 +16,6 @@ class ChatEvent: Listener {
     private fun onChat(e: AsyncChatEvent) {
         e.renderer(GlobalRenderer)
         Bukkit.getScheduler().runTask(plugin, Runnable { VisualChat.visualiseMessage(e.message(), e.player) })
+        Gork.handleChatEvent(e)
     }
 }
