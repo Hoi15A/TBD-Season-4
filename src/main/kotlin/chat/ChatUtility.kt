@@ -70,7 +70,7 @@ object ChatUtility {
 
 object GlobalRenderer : ChatRenderer {
     override fun render(source: Player, sourceDisplayName: Component, message: Component, viewer: Audience): Component {
-        val playerHead = Component.`object`(ObjectContents.playerHead(source.uniqueId))
+        val playerHead = Component.`object`(ObjectContents.playerHead(source.name))
         val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
         return playerHead
             .append(Component.text(" "))
