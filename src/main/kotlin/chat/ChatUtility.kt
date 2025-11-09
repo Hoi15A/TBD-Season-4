@@ -73,6 +73,7 @@ object GlobalRenderer : ChatRenderer {
         val playerHead = Component.`object`(ObjectContents.playerHead(source.uniqueId))
         val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
         return playerHead
+            .append(Component.text(" "))
             .append(allTags.deserialize("${if(LiveUtil.livePlayers.contains(source.uniqueId)) "<prefix:live> " else ""}<tbdcolour>${if(source.name == "Byrtrum" || source.name == "fish_25") "<obfuscated>${source.name}" else source.name}<reset>: ")
                 .append(if(source.hasPermission("tbd.group.admin")) allTags.deserialize(plainMessage) else restrictedTags.deserialize(plainMessage)))
     }
