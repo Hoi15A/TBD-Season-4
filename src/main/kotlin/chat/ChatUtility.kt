@@ -4,7 +4,6 @@ import plugin
 import chat.Formatting.allTags
 import chat.Formatting.restrictedTags
 import command.LiveUtil
-import util.Noxesium
 import util.Sounds
 
 import io.papermc.paper.chat.ChatRenderer
@@ -12,6 +11,7 @@ import io.papermc.paper.chat.ChatRenderer
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.`object`.ObjectContents
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
 import org.bukkit.Bukkit
@@ -70,7 +70,7 @@ object ChatUtility {
 
 object GlobalRenderer : ChatRenderer {
     override fun render(source: Player, sourceDisplayName: Component, message: Component, viewer: Audience): Component {
-        val playerHead = Noxesium.buildSkullComponent(source.uniqueId, false, 0, 0, 1.0f)
+        val playerHead = Component.`object`(ObjectContents.playerHead(source.uniqueId))
         val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
         return playerHead
             .append(allTags.deserialize("${if(LiveUtil.livePlayers.contains(source.uniqueId)) "<prefix:live> " else ""}<tbdcolour>${if(source.name == "Byrtrum" || source.name == "fish_25") "<obfuscated>${source.name}" else source.name}<reset>: ")

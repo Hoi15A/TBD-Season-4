@@ -59,7 +59,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
 
     implementation("org.incendo:cloud-paper:2.0.0-beta.10")
     implementation("org.incendo:cloud-annotations:2.0.0")

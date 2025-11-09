@@ -2,12 +2,6 @@ package util
 
 import logger
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.minimessage.tag.Tag
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 import java.util.*
@@ -41,28 +35,6 @@ object Noxesium {
     /** Returns whether an online player is in the noxesiumUsers list. **/
     fun isNoxesiumUser(player : Player) : Boolean {
         return noxesiumUsers.containsKey(player.uniqueId)
-    }
-
-    /**
-     * Noxesium skull component builder that allows the displaying of player heads in chat for those that are utilising Noxesium.
-     * Standard coloured skull parameters maylook like: (uuid, false, 0, 0, 1.0)
-     * @params
-     * uuid: UUID of player's skull to build.
-     * isGrayscale: Decide whether the skull should be coloured or grayscale.
-     * advance: Moves skull horizontally in non-chat UIs.
-     * ascent: Moves skull vertically.
-     * scale: Scales the skull anchored by its top-left corner.
-     * */
-    fun buildSkullComponent(uuid : UUID, isGrayscale : Boolean, advance : Int, ascent : Int, scale : Float) : Component {
-        return Component.translatable("%nox_uuid%$uuid,$isGrayscale,$advance,$ascent,$scale", "").color(NamedTextColor.WHITE)
-    }
-
-    /** Resolves any MiniMessage <skull:NAME> tags used in messages. **/
-    fun skullResolver() : TagResolver {
-        return TagResolver.resolver("skull") { args, _ ->
-            val rawName = args.popOr("Name not supplied.")
-            Tag.inserting(buildSkullComponent(Bukkit.getPlayerUniqueId(rawName.toString())!!, false, 0, 0, 1.0f))
-        }
     }
 }
 

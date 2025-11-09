@@ -6,7 +6,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
-import util.Noxesium
+import net.kyori.adventure.text.`object`.ObjectContents
 
 object Formatting {
     /** Prefix enum for allowing MiniMessage usage of the <prefix:NAME> tag in messages. **/
@@ -35,7 +35,7 @@ object Formatting {
         .tags(
             TagResolver.builder()
                 .resolver(StandardTags.defaults())
-                .resolver(Noxesium.skullResolver())
+                .resolver(skullResolver())
                 .resolver(TBD_COLOUR)
                 .resolver(NOTIFICATION_COLOUR)
                 .resolver(prefix())
@@ -53,7 +53,7 @@ object Formatting {
                 .resolver(StandardTags.pride())
                 .resolver(StandardTags.gradient())
                 .resolver(StandardTags.shadowColor())
-                .resolver(Noxesium.skullResolver())
+                .resolver(skullResolver())
                 .resolver(TBD_COLOUR)
                 .build()
         )
@@ -92,4 +92,12 @@ object Formatting {
         "%s's existence was erased",
         "%s had their existence excommunicated"
     )
+
+    /** Resolves any MiniMessage <skull:NAME> tags used in messages. **/
+    fun skullResolver() : TagResolver {
+        return TagResolver.resolver("skull") { args, _ ->
+            val rawName = args.popOr("Name not supplied.")
+            Tag.inserting(Component.`object`(ObjectContents.playerHead(rawName.toString())))
+        }
+    }
 }
