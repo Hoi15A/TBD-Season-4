@@ -12,7 +12,7 @@ import plugin
 object Gork {
     private var shouldGorkSpawnEye = true
     private val triggerRegex = Regex("@g(\\w\\w)k")
-    private val prefix = allTags.deserialize("<skull:Chest><tbdcolour>Gork<white>: ")
+    private val prefix = allTags.deserialize("<skull:Chest> <tbdcolour>Gork<white>: ")
     private val responses = listOf( // todo: config rework, move to config
         // Ideally the answers should make some amount of sense as an answer to "@grok is this true?"
         // Yes
@@ -28,6 +28,7 @@ object Gork {
         "There is not a doubt in my mind",
         "That's actually my favourite thing to do",
         "good juju",
+        "YOLO",
         // No
         "Nope",
         "Unlikely",
@@ -51,7 +52,8 @@ object Gork {
         "bruh <skull:MHF_Zombie>",
         "According to all known laws of aviation, <player> should not be able to fly",
         "Honestly, I don't care",
-        "ok garmin"
+        "ok garmin",
+        "uwu <player>"
     )
 
     fun handleChatEvent(e: AsyncChatEvent) {
