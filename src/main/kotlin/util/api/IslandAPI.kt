@@ -45,7 +45,7 @@ object IslandAPI {
                 meta.lore(listOf(
                     Formatting.allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}"),
                     Formatting.allTags.deserialize("<!i>"),
-                    Formatting.allTags.deserialize("<!i><aqua>Unlock the \"${cosmeticToken.name}\" ${cosmeticToken.cosmetic.category.name.lowercase()}"),
+                    Formatting.allTags.deserialize("<!i><aqua>Unlock the \"${cosmeticToken.name}\" ${cosmeticToken.cosmetic.category.name.lowercase().replace("_", " ")}"),
                     Formatting.allTags.deserialize("<!i><aqua>in your wardrobe."),
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><gray>Remaining Time: <white>${dateTimeDifference(listing.endTime.toString())}"),
@@ -55,7 +55,6 @@ object IslandAPI {
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><tbdcolour>> <key:key.attack> <white>to inspect cosmetic"),
                     Formatting.allTags.deserialize("<!i><tbdcolour>> <key:key.use> <white>to view last 24hrs sales"),
-                    // Formatting.allTags.deserialize("<!i><tbdcolour>> Shift + <key:key.attack> <red>coming soon™..."),
                     Formatting.allTags.deserialize("<!i><tbdcolour>> Shift + <key:key.use> <white>to share to chat")
                 ))
                 if(item.type in listOf(Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR)) {
@@ -83,7 +82,6 @@ object IslandAPI {
                     Formatting.allTags.deserialize("<!i><aqua>Join <b><white>play.<#ffff00>mccisland<white>.net<aqua></b> to purchase"),
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><tbdcolour>> <key:key.use> <white>to view last 24hrs sales"),
-                    // Formatting.allTags.deserialize("<!i><tbdcolour>> Shift + <key:key.attack> <red>coming soon™..."),
                     Formatting.allTags.deserialize("<!i><tbdcolour>> Shift + <key:key.use> <white>to share to chat")
                 )
                 for(component in auctionLoreLines) loreLines.add(component)
@@ -192,47 +190,55 @@ object IslandAPI {
             CosmeticCategory.TRAIL -> Material.LEATHER_LEGGINGS
             CosmeticCategory.CLOAK -> Material.LEATHER_CHESTPLATE
             CosmeticCategory.ROD -> Material.FISHING_ROD
+            CosmeticCategory.BOW -> Material.BOW
+            CosmeticCategory.CROSSBOW -> Material.CROSSBOW
+            CosmeticCategory.DAGGER -> Material.WOODEN_SWORD
+            CosmeticCategory.HEAVY_CROSSBOW -> Material.CROSSBOW
+            CosmeticCategory.SHORTBOW -> Material.BOW
+            CosmeticCategory.SWORD -> Material.STONE_SWORD
             CosmeticCategory.UNKNOWN__ -> Material.STRUCTURE_VOID
         }
     }
 
     private fun getSimpleAssetMaterial(simpleAssetName: String): Material {
-        return when(simpleAssetName) {
-            "30d MCC+ Token" -> Material.PURPLE_DYE
-            "Style Soul" -> Material.SOUL_CAMPFIRE
-            "Ruby Style Shard" -> Material.RED_DYE
-            "Amber Style Shard" -> Material.ORANGE_DYE
-            "Citrine Style Shard" -> Material.YELLOW_DYE
-            "Jade Style Shard" -> Material.LIME_DYE
-            "Aquamarine Style Shard" -> Material.LIGHT_BLUE_DYE
-            "Sapphire Style Shard" -> Material.BLUE_DYE
-            "Amethyst Style Shard" -> Material.MAGENTA_DYE
-            "Garnet Style Shard" -> Material.PINK_DYE
-            "Opal Style Shard" -> Material.WHITE_DYE
-            "Ultimate Cyber Surge Crate" -> Material.BARREL
-            "Limited Sea Monsters Crate (2025)" -> Material.BARREL
-            "Limited Halloween Crate (2025)" -> Material.BARREL
-            else -> Material.STRUCTURE_VOID
-        }
+       return with(simpleAssetName) {
+           when {
+               contains("30d MCC+ Token") -> Material.PURPLE_DYE
+               contains("Style Soul") -> Material.SOUL_CAMPFIRE
+               contains("Ruby Style Shard") -> Material.RED_DYE
+               contains("Amber Style Shard") -> Material.ORANGE_DYE
+               contains("Citrine Style Shard") -> Material.YELLOW_DYE
+               contains("Jade Style Shard") -> Material.LIME_DYE
+               contains("Aquamarine Style Shard") -> Material.LIGHT_BLUE_DYE
+               contains("Sapphire Style Shard") -> Material.BLUE_DYE
+               contains("Amethyst Style Shard") -> Material.MAGENTA_DYE
+               contains("Garnet Style Shard") -> Material.PINK_DYE
+               contains("Opal Style Shard") -> Material.WHITE_DYE
+               contains("Crate") -> Material.BARREL
+               contains("Elimination Effect") -> Material.SKULL_BANNER_PATTERN
+               contains("Chroma Set") -> Material.PRIZE_POTTERY_SHERD
+               contains("Weapon Core") -> Material.HEAVY_CORE
+               else -> Material.STRUCTURE_VOID
+           }
+       }
     }
 
     private fun getSimpleAssetLore(simpleAssetName: String): List<Component> {
-        return if(simpleAssetName.contains("Style Shard")) {
-            listOf(
-                Formatting.allTags.deserialize("<!i>"),
-                Formatting.allTags.deserialize("<!i><aqua>An extremely rare shard that can be"),
-                Formatting.allTags.deserialize("<!i><aqua>used somewhere on the island..."),
-                Formatting.allTags.deserialize("<!i>")
-            )
-        } else {
-            when(simpleAssetName) {
-                "30d MCC+ Token" -> listOf(
+        return with(simpleAssetName) {
+            when {
+                contains("Style Shard") -> listOf(
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><aqua>An extremely rare shard that can be"),
+                    Formatting.allTags.deserialize("<!i><aqua>used somewhere on the island..."),
+                    Formatting.allTags.deserialize("<!i>")
+                )
+                contains("30d MCC+ Token") -> listOf(
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><aqua>Can be claimed for either <white>+30 days <aqua>of"),
                     Formatting.allTags.deserialize("<!i><aqua>the <white>MCC+ Rank <aqua>or <${ItemRarity.EPIC.colourHex}>400 gems<aqua>."),
                     Formatting.allTags.deserialize("<!i>")
                 )
-                "Style Soul" -> listOf(
+                contains("Style Soul") -> listOf(
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><aqua>A strange soul carefully extracted"),
                     Formatting.allTags.deserialize("<!i><aqua>from a <white>Limited <aqua>cosmetic, necessary for"),
@@ -240,7 +246,7 @@ object IslandAPI {
                     Formatting.allTags.deserialize("<!i><aqua>cosmetics and upgrades."),
                     Formatting.allTags.deserialize("<!i>")
                 )
-                "Ultimate Cyber Surge Crate" -> listOf(
+                contains("Ultimate Cyber Surge Crate") -> listOf(
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><aqua>A crate obtained along with the"),
                     Formatting.allTags.deserialize("<!i><aqua>purchase of the <white>Cyber Surge Ultimate"),
@@ -252,18 +258,41 @@ object IslandAPI {
                     Formatting.allTags.deserialize("<!i><dark_gray>• <${ItemRarity.LEGENDARY.colourHex}>[Spider Claws Token]"),
                     Formatting.allTags.deserialize("<!i>")
                 )
-                "Limited Sea Monsters Crate (2025)" -> listOf(
+                contains("Limited Sea Monsters Crate (2025)") -> listOf(
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><aqua>A crate containing a random limited"),
                     Formatting.allTags.deserialize("<!i><aqua>cosmetic from the <white>2025 Sea Monsters"),
                     Formatting.allTags.deserialize("<!i><white>Event Machine<aqua>."),
                     Formatting.allTags.deserialize("<!i>")
                 )
-                "Limited Halloween Crate (2025)" -> listOf(
+                contains("Limited Halloween Crate (2025)") -> listOf(
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><aqua>A crate containing a random limited"),
                     Formatting.allTags.deserialize("<!i><aqua>cosmetic from the <white>2025 Halloween"),
                     Formatting.allTags.deserialize("<!i><white>Event Machine<aqua>."),
+                    Formatting.allTags.deserialize("<!i>")
+                )
+                contains("Elimination Effect") -> listOf(
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><aqua>Applies the \"${simpleAssetName.removeSuffix(" Elimination Effect")}\" elimination"),
+                    Formatting.allTags.deserialize("<!i><aqua>effect to a selected weapon skin."),
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><gold>Only <yellow>Tier 1<gold> weapon skins and above"),
+                    Formatting.allTags.deserialize("<!i><gold>support elimination effects."),
+                    Formatting.allTags.deserialize("<!i>")
+                )
+                contains("Chroma Set") -> listOf(
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><aqua>Applies the \"${simpleAssetName.removeSuffix(" Chroma Set")}\" chroma"),
+                    Formatting.allTags.deserialize("<!i><aqua>set to a selected weapon skin."),
+                    Formatting.allTags.deserialize("<!i>")
+                )
+                contains("Weapon Core") -> listOf(
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><gray>A fragment of a weapon crate."),
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><aqua>Bring to the <white>Weapon Crate Shop<aqua> to"),
+                    Formatting.allTags.deserialize("<!i><aqua>craft them into a <white>Weapon Crate<aqua>."),
                     Formatting.allTags.deserialize("<!i>")
                 )
                 else -> listOf(

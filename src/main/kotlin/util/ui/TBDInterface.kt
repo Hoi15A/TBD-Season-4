@@ -631,7 +631,7 @@ class PaginatedIslandExchangeMenu(items: List<ItemStack>): PaginationTransformat
             val player = click.player
             when(click.type) {
                 ClickType.LEFT -> {
-                    if(element.type in listOf(Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR)) {
+                    if(element.type in listOf(Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.BOW, Material.CROSSBOW, Material.WOODEN_SWORD, Material.STONE_SWORD)) {
                         player.playSound(Sounds.INTERFACE_ENTER_SUB_MENU)
                         TBDInterfaces.newInspectCosmeticInterface(player, PlainTextComponentSerializer.plainText().serialize(element.effectiveName()).removeSuffix(" Token"), TBDInterfaceType.ISLAND_COSMETIC_INSPECT)
                     } else {
