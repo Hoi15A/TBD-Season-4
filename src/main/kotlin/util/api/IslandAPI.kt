@@ -299,6 +299,9 @@ object IslandAPI {
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><red><b>Description unknown."),
                     Formatting.allTags.deserialize("<!i><red>Contact an admin if you see this."),
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><red><prefix:warning>This item may be a Weapon Skin"),
+                    Formatting.allTags.deserialize("<!i><red>with a tier, which requires an API fix."),
                     Formatting.allTags.deserialize("<!i>")
                 )
             }
