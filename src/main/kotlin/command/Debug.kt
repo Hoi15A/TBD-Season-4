@@ -83,7 +83,7 @@ class Debug {
     @Permission("tbd.command.debug")
     fun migrateMemento(css: CommandSourceStack) {
         val player = css.sender as Player
-        if(!player.isHoldingItemInMainHand()) {
+        if (!player.isHoldingItemInMainHand()) {
             player.sendMessage(Formatting.allTags.deserialize("<red>You need to be holding an item to migrate memento data.</red>"))
             return
         }
@@ -91,7 +91,7 @@ class Debug {
         val itemStack = player.inventory.itemInMainHand
         val legacyKey = NamespacedKey(plugin, "pdc.type.memento_type")
 
-        if(!itemStack.persistentDataContainer.has(legacyKey)) {
+        if (!itemStack.persistentDataContainer.has(legacyKey)) {
             player.sendMessage(Formatting.allTags.deserialize("<red>This item does not have legacy memento data.</red>"))
             return
         }
@@ -102,30 +102,5 @@ class Debug {
             it.set(Keys.MEMENTO_TYPE, PersistentDataType.STRING, value)
         }
         player.sendMessage(Formatting.allTags.deserialize("<green>Memento data migrated successfully!</green>"))
-    }
-
-    @Command("debug scavengerhunt create")
-    @Permission("tbd.command.debug.seb")
-    fun createScavengerHunt(css: CommandSourceStack) {
-        val file = File("plugins/tbdseason4/scavengerhunt.flag")
-
-        if (file.exists().not()) {
-            file.createNewFile()
-            css.sender.sendMessage(Formatting.allTags.deserialize("<green>Scavenger hunt file created.</green>"))
-        } else {
-            css.sender.sendMessage(Formatting.allTags.deserialize("<red>Scavenger hunt file already exists.</red>"))
-        }
-    }
-
-    @Command("debug scavengerhunt check")
-    @Permission("tbd.command.debug.seb")
-    fun checkScavengerHunt(css: CommandSourceStack) {
-        val file = File("plugins/tbdseason4/scavengerhunt.flag")
-
-        if (file.exists().not()) {
-            css.sender.sendMessage(Formatting.allTags.deserialize("<green>Scavenger hunt file doesn't exist.</green>"))
-        } else {
-            css.sender.sendMessage(Formatting.allTags.deserialize("<red>Scavenger hunt file already exists.</red>"))
-        }
     }
 }
