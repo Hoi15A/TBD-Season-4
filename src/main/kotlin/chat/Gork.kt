@@ -29,6 +29,7 @@ object Gork {
         "That's actually my favourite thing to do",
         "good juju",
         "YOLO",
+        "Bet",
         // No
         "Nope",
         "Unlikely",
@@ -42,6 +43,7 @@ object Gork {
         "Don't know about that one mate",
         "erm actually <player>, that is factually incorrect <skull:MHF_Skeleton>",
         "bad juju",
+        "Sorry, but no",
         // Unsure / idek
         "As an Al language model, I have been trained to generate responses that are intended to be helpful, informative, and objective...",
         "I’m not permitted to comment",
@@ -53,7 +55,8 @@ object Gork {
         "According to all known laws of aviation, <player> should not be able to fly",
         "Honestly, I don't care",
         "ok garmin",
-        "uwu <player>"
+        "uwu <player>",
+        "How should I know"
     )
 
     fun handleChatEvent(e: AsyncChatEvent) {

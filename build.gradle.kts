@@ -14,13 +14,13 @@ val commitHash = Runtime
     }
 
 plugins {
-    kotlin("jvm") version "2.1.0"
-    kotlin("kapt") version "2.0.0"
-    id("com.gradleup.shadow") version "8.3.5"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
-    id("xyz.jpenilla.run-paper") version "2.3.1" // Adds runServer and runMojangMappedServer tasks for testing
-    id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.2.0" // Generates plugin.yml based on the Gradle config
-    id("com.apollographql.apollo3") version "3.8.2" // GraphQL
+    kotlin("jvm") version "2.3.0-RC3"
+    kotlin("kapt") version "2.3.0-RC3"
+    id("com.gradleup.shadow") version "9.3.0"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    id("xyz.jpenilla.run-paper") version "3.0.2" // Adds runServer and runMojangMappedServer tasks for testing
+    id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.3.0" // Generates plugin.yml based on the Gradle config
+    id("com.apollographql.apollo3") version "4.0.0-beta.7" // GraphQL
 }
 
 group = "net.tbdsmp"
@@ -36,7 +36,7 @@ bukkitPluginYaml {
         "derNiklaas",
         "Sebiann"
     )
-    apiVersion = "1.21.8"
+    apiVersion = "1.21.11"
 }
 
 kotlin {
@@ -59,9 +59,9 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 
-    implementation("org.incendo:cloud-paper:2.0.0-beta.10")
+    implementation("org.incendo:cloud-paper:2.0.0-beta.13")
     implementation("org.incendo:cloud-annotations:2.0.0")
     implementation("org.incendo:cloud-kotlin-extensions:2.0.0")
     kapt("org.incendo:cloud-annotations:2.0.0")
@@ -72,7 +72,7 @@ dependencies {
 
     implementation("com.noxcrew.interfaces:interfaces:2.0.1-SNAPSHOT")
 
-    implementation("com.apollographql.apollo3:apollo-runtime:3.8.2")
+    implementation("com.apollographql.apollo3:apollo-runtime:4.0.0-beta.7")
 }
 
 apollo {
@@ -101,4 +101,3 @@ tasks {
         mergeServiceFiles()
     }
 }
-
