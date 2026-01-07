@@ -36,7 +36,7 @@ bukkitPluginYaml {
         "derNiklaas",
         "Sebiann"
     )
-    apiVersion = "1.21.10"
+    apiVersion = "1.21.11"
 }
 
 kotlin {
@@ -59,7 +59,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 
     implementation("org.incendo:cloud-paper:2.0.0-beta.13")
     implementation("org.incendo:cloud-annotations:2.0.0")
