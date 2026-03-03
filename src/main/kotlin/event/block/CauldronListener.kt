@@ -20,6 +20,6 @@ class CauldronListener : Listener {
         entity.remove()
 
         val world = block.world
-        world.dropItem(entity.location, org.bukkit.inventory.ItemStack(Material.MAP, 1))
+        world.dropItem(entity.location, org.bukkit.inventory.ItemStack(Material.MAP, stack.amount))
     }
 }
