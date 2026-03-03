@@ -62,6 +62,7 @@ class SeasonFourPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(BlockPlace(), this)
         server.pluginManager.registerEvents(PlayerCraft(), this)
         server.pluginManager.registerEvents(CrafterListener(), this)
+        server.pluginManager.registerEvents(CauldronListener(), this)
     }
 
     private fun registerCommands() {
