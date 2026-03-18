@@ -30,6 +30,7 @@ object Gork {
         "good juju",
         "YOLO",
         "Bet",
+        "Obviously, <player>. Next question",
         // No
         "Nope",
         "Unlikely",

@@ -21,7 +21,7 @@ class Admin {
     fun adminChat(css: CommandSourceStack, @Argument("text") text: Array<String>) {
         if(css.sender is Player) {
             val player = css.sender as Player
-            ChatUtility.broadcastAdmin("<skull:${player.name}><dark_red>${player.name}<white>: ${text.joinToString(" ")}", false)
+            ChatUtility.broadcastAdmin("<skull:${player.name}> <dark_red>${player.name}<white>: ${text.joinToString(" ")}", false)
         }
     }
 
@@ -31,7 +31,7 @@ class Admin {
     fun devChat(css: CommandSourceStack, @Argument("text") text: Array<String>) {
         if(css.sender is Player) {
             val player = css.sender as Player
-            ChatUtility.broadcastDev("<skull:${player.name}><gold>${player.name}<white>: ${text.joinToString(" ")}", false)
+            ChatUtility.broadcastDev("<skull:${player.name}> <gold>${player.name}<white>: ${text.joinToString(" ")}", false)
         }
     }
 }
