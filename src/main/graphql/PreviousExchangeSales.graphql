@@ -26,6 +26,12 @@ query PreviousExchangeSales {
                     type
                     uniqueIdentifier
                 }
+                weaponSkinData {
+                    tier
+                    kills
+                    chromaSet
+                    eliminationEffect
+                }
             }
         }
     }

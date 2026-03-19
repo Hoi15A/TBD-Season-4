@@ -52,6 +52,14 @@ interface Asset {
 "A goal."
 union Goal = GeneralGoal | Statistic
 
+"An asset with an amount."
+type AssetQuantity {
+  "The amount owned."
+  amount: Int!
+  "The asset."
+  asset: Asset!
+}
+
 "An auction listing."
 type AuctionListing {
   "The asset that is being auctioned."
@@ -131,9 +139,9 @@ type Cosmetic implements Asset {
   "The description of the cosmetic."
   description: String!
   """
-  The number of people who own this cosmetic.
+  The number of people who have this cosmetic equipped in their wardrobe.
 
-  The exact number is only displayed if fewer than 1000 players own this cosmetic.
+  The exact number is only displayed if fewer than 1000 players have this cosmetic.
   Otherwise, either `1000+` or `10000+` will be returned, indicating the real value is higher than this number.
   Some cosmetics are excluded from ownership reporting, for these cosmetics `null` will be returned.
   """
@@ -183,6 +191,8 @@ type CosmeticOwnershipState {
   donationsMade: Int
   "If the cosmetic is owned."
   owned: Boolean!
+  "The weapon skin data for this cosmetic, if applicable."
+  weaponSkinData: WeaponSkinData
 }
 
 "A cosmetic token."
@@ -198,8 +208,12 @@ type CosmeticToken implements Asset {
 
   This is based on the internal identifier for this asset and can be used to track it over time.
   For example, if the name of this asset changed, the identifier would remain the same.
+
+  If the cosmetic held in this token is a weapon skin, the unique identifier will be different for each tier.
   """
   uniqueIdentifier: UUID!
+  "The weapon skin data for this cosmetic token, if applicable."
+  weaponSkinData: WeaponSkinData
 }
 
 "A Crown Level and associated trophy data."
@@ -402,6 +416,18 @@ type Player {
   A list with all factions data for the player, including level, experience, and whether it is the currently selected faction.
   """
   factions: [Faction!]!
+  """
+  The contents of the player's Infinibag.
+
+  This method is conditional on the player having the in-game "infinibag" API setting enabled.
+  """
+  infinibag: [AssetQuantity!]
+  """
+  The contents of the player's Infinivault.
+
+  This method is conditional on the player having the in-game "infinibag" API setting enabled.
+  """
+  infinivault: [AssetQuantity!]
   "The player's MCC+ status, if currently subscribed."
   mccPlusStatus: MCCPlusStatus
   """
@@ -504,6 +530,13 @@ type Query {
   statistic(key: String! @spectaql(options : [{key : "example", value : "games_played"}])): Statistic
   "Returns a list of all known statistics."
   statistics: [Statistic!]!
+  """
+  Returns a list of tradable assets.
+
+  An asset is considered tradable if it can be traded using player trading or sold in the Island Exchange.
+  Note that this method "flattens" weapon skins into a simple combination of the token and the tier.
+  """
+  tradableAssets: [TradingData!]!
 }
 
 "Information about a quest."
@@ -629,6 +662,20 @@ type Status {
   server: Server
 }
 
+"Data relating to assets that can be traded."
+type TradingData {
+  "The asset in question."
+  asset: Asset!
+  """
+  The number of the asset that is owned.
+
+  This is the total sum of all this asset that exists in the Infinibags and Infinivaults of all players.
+  The exact number is only displayed if fewer than 1000 of this asset exist.
+  Otherwise, either `1000+` or `10000+` will be returned, indicating the real value is higher than this number.
+  """
+  globalNumberOwned: String! @spectaql(options : [{key : "example", value : "1000+"}])
+}
+
 "Data on the amount of trophies a user has/can have."
 type TrophyData {
   "The amount of bonus trophies."
@@ -637,6 +684,18 @@ type TrophyData {
   obtainable: Int!
   "The amount of trophies obtained."
   obtained: Int!
+}
+
+"Data relating to a weapon skin."
+type WeaponSkinData {
+  "The chroma set applied to this weapon skin."
+  chromaSet: String!
+  "The elimination effect applied to this weapon skin, if any."
+  eliminationEffect: String
+  "The number of kills tracked on this weapon skin, if applicable."
+  kills: Int
+  "The tier of this weapon skin, from 0 to 3."
+  tier: Int!
 }
 
 "A boost type for a quest."
@@ -655,6 +714,8 @@ enum CosmeticCategory {
   ACCESSORY
   "Auras."
   AURA
+  "Axes."
+  AXE
   "Bows."
   BOW
   "Cloaks."
@@ -700,12 +761,26 @@ enum CosmeticType {
   """
   EXCLUSIVE
   """
+  Legacy cosmetics.
+
+  Cosmetics that are worth Bonus Trophies and are not tradable.
+  """
+  LEGACY
+  """
   Limited cosmetics.
 
   Cosmetics that are no longer obtainable except via trading.
   They are also worth Bonus Trophies.
   """
   LIMITED
+  """
+  Premium cosmetics.
+
+  Cosmetics that are only obtainable by premium means, or through trading.
+  They remain always obtainable, or will become obtainable again in the future.
+  They are also worth Bonus Trophies.
+  """
+  PREMIUM
   "Standard cosmetics."
   STANDARD
 }

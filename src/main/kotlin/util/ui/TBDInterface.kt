@@ -26,6 +26,7 @@ import util.Sounds
 import util.api.IslandAPI
 import util.api.IslandAssetType
 import util.api.Listings
+import util.stripTokenSuffix
 import java.text.NumberFormat
 import java.time.Instant
 
@@ -631,16 +632,16 @@ class PaginatedIslandExchangeMenu(items: List<ItemStack>): PaginationTransformat
             val player = click.player
             when(click.type) {
                 ClickType.LEFT -> {
-                    if(element.type in listOf(Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.BOW, Material.CROSSBOW, Material.WOODEN_SWORD, Material.STONE_SWORD)) {
+                    if(element.type in listOf(Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.BOW, Material.CROSSBOW, Material.WOODEN_SWORD, Material.STONE_SWORD, Material.STONE_AXE)) {
                         player.playSound(Sounds.INTERFACE_ENTER_SUB_MENU)
-                        TBDInterfaces.newInspectCosmeticInterface(player, PlainTextComponentSerializer.plainText().serialize(element.effectiveName()).removeSuffix(" Token"), TBDInterfaceType.ISLAND_COSMETIC_INSPECT)
+                        TBDInterfaces.newInspectCosmeticInterface(player, PlainTextComponentSerializer.plainText().serialize(element.effectiveName()).stripTokenSuffix(), TBDInterfaceType.ISLAND_COSMETIC_INSPECT)
                     } else {
                         player.playSound(Sounds.INTERFACE_ERROR)
                     }
                 }
                 ClickType.RIGHT -> {
                     player.playSound(Sounds.INTERFACE_ENTER_SUB_MENU)
-                    TBDInterfaces.newPreviousSalesExchangeInterface(player, PlainTextComponentSerializer.plainText().serialize(element.effectiveName()).removeSuffix(" Token"), TBDInterfaceType.ISLAND_EXCHANGE_HISTORY)
+                    TBDInterfaces.newPreviousSalesExchangeInterface(player, PlainTextComponentSerializer.plainText().serialize(element.effectiveName()).stripTokenSuffix(), TBDInterfaceType.ISLAND_EXCHANGE_HISTORY)
                 }
                 ClickType.SHIFT_RIGHT -> {
                     player.playSound(Sounds.INTERFACE_SHARE_ITEM)

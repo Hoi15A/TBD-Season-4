@@ -37,15 +37,31 @@ object IslandAPI {
         for(listing in queryListings) {
             if(listing.asset.onCosmeticToken != null) {
                 val cosmeticToken = listing.asset.onCosmeticToken
-                val rarity = cosmeticToken.rarity.convertRarity()
-                val item = ItemStack(getCosmeticMaterial(cosmeticToken.cosmetic.category), listing.amount)
+                val cosmetic = cosmeticToken.cosmetic
+                val rarity = cosmetic.rarity.convertRarity()
+
+                // Weapon Skin Data
+                val weaponSkinData = cosmeticToken.weaponSkinData
+                val tier = cosmeticToken.weaponSkinData?.tier
+                val chromaSet = cosmeticToken.weaponSkinData?.chromaSet
+                val elimEffect = cosmeticToken.weaponSkinData?.eliminationEffect
+                val kills = cosmeticToken.weaponSkinData?.kills
+
+                val item = ItemStack(getCosmeticMaterial(cosmetic.category), listing.amount)
                 var meta = item.itemMeta
                 meta.setMaxStackSize(64)
-                meta.displayName(Formatting.allTags.deserialize("<!i><${rarity.colourHex}>${cosmeticToken.name} Token"))
-                meta.lore(listOf(
+                meta.displayName(Formatting.allTags.deserialize("<!i><${rarity.colourHex}>${cosmetic.name} Token ${if(tier != null && tier > 0) "★".repeat(tier) else ""}"))
+                meta.lore(listOfNotNull(
                     Formatting.allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}"),
                     Formatting.allTags.deserialize("<!i>"),
-                    Formatting.allTags.deserialize("<!i><aqua>Unlock the \"${cosmeticToken.name}\" ${cosmeticToken.cosmetic.category.name.lowercase().replace("_", " ")}"),
+
+                    if(weaponSkinData != null) Formatting.allTags.deserialize("<!i><aqua>Chroma Set: <white>${chromaSet?.removeSuffix(" Chroma Set") ?: "None"}") else null,
+                    if(weaponSkinData != null && tier != null && tier >= 1) Formatting.allTags.deserialize("<!i><aqua>Elimination Effect: <white>${elimEffect?.removeSuffix(" Elimination Effect") ?: "None"}") else null,
+                    if(weaponSkinData != null && tier != null && tier >= 2) Formatting.allTags.deserialize("<!i><aqua>Eliminations: <white>${kills ?: "0"}") else null,
+                    if(weaponSkinData != null && tier != null && tier >= 3) Formatting.allTags.deserialize("<!i><aqua>✯ Weapon Evolution ✯") else null,
+                    if(weaponSkinData != null) Formatting.allTags.deserialize("<!i>") else null,
+
+                    Formatting.allTags.deserialize("<!i><aqua>Unlock the \"${cosmetic.name}\" ${cosmetic.category.name.lowercase().replace("_", " ")}"),
                     Formatting.allTags.deserialize("<!i><aqua>in your wardrobe."),
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><gray>Remaining Time: <white>${dateTimeDifference(listing.endTime.toString())}"),
@@ -102,15 +118,16 @@ object IslandAPI {
         for(listing in queryListings) {
             if(listing.asset.onCosmeticToken != null) {
                 val cosmeticToken = listing.asset.onCosmeticToken
-                if(cosmeticToken.name == soldItem) {
-                    val rarity = cosmeticToken.rarity.convertRarity()
-                    val item = ItemStack(getCosmeticMaterial(cosmeticToken.cosmetic.category), listing.amount)
+                if(cosmeticToken.cosmetic.name == soldItem) {
+                    val cosmetic = cosmeticToken.cosmetic
+                    val rarity = cosmetic.rarity.convertRarity()
+                    val item = ItemStack(getCosmeticMaterial(cosmetic.category), listing.amount)
                     var meta = item.itemMeta
-                    meta.displayName(Formatting.allTags.deserialize("<!i><${rarity.colourHex}>${cosmeticToken.name} Token<white>: Sales Data"))
+                    meta.displayName(Formatting.allTags.deserialize("<!i><${rarity.colourHex}>${cosmetic.name} Token<white>: Sales Data"))
                     meta.lore(listOf(
-                        Formatting.allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}"),
+                        Formatting.allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}${cosmetic.type.rawValue}"),
                         Formatting.allTags.deserialize("<!i>"),
-                        Formatting.allTags.deserialize("<!i><aqua>Unlock the \"${cosmeticToken.name}\" ${cosmeticToken.cosmetic.category.name.lowercase()}"),
+                        Formatting.allTags.deserialize("<!i><aqua>Unlock the \"${cosmetic.name}\" ${cosmetic.category.name.lowercase()}"),
                         Formatting.allTags.deserialize("<!i><aqua>in your wardrobe."),
                         Formatting.allTags.deserialize("<!i>")
                     ))
@@ -150,14 +167,14 @@ object IslandAPI {
         for(listing in queryListings) {
             if(listing.asset.onCosmeticToken != null) {
                 val cosmeticToken = listing.asset.onCosmeticToken
-                if(cosmeticToken.name == cosmeticName) {
+                if(cosmeticToken.cosmetic.name == cosmeticName) {
                     val cosmetic = cosmeticToken.cosmetic
                     val rarity = cosmetic.rarity.convertRarity()
                     val item = ItemStack(getCosmeticMaterial(cosmetic.category), listing.amount)
                     var meta = item.itemMeta
                     meta.displayName(Formatting.allTags.deserialize("<!i><${rarity.colourHex}>${cosmetic.name}"))
                     meta.lore(listOf(
-                        Formatting.allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}"),
+                        Formatting.allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}${cosmetic.type.rawValue}"),
                         Formatting.allTags.deserialize("<!i>"),
                         Formatting.allTags.deserialize("<!i><tbdcolour>Obtainment:"),
                         Formatting.allTags.deserialize("<!i><gray>${cosmetic.obtainmentHint}"),
@@ -196,6 +213,7 @@ object IslandAPI {
             CosmeticCategory.HEAVY_CROSSBOW -> Material.CROSSBOW
             CosmeticCategory.SHORTBOW -> Material.BOW
             CosmeticCategory.SWORD -> Material.STONE_SWORD
+            CosmeticCategory.AXE -> Material.STONE_AXE
             CosmeticCategory.UNKNOWN__ -> Material.STRUCTURE_VOID
         }
     }
@@ -218,6 +236,7 @@ object IslandAPI {
                contains("Elimination Effect") -> Material.SKULL_BANNER_PATTERN
                contains("Chroma Set") -> Material.PRIZE_POTTERY_SHERD
                contains("Weapon Core") -> Material.HEAVY_CORE
+               contains("Collector Cosmetic Core") -> Material.NETHER_STAR
                else -> Material.STRUCTURE_VOID
            }
        }
@@ -258,18 +277,18 @@ object IslandAPI {
                     Formatting.allTags.deserialize("<!i><dark_gray>• <${ItemRarity.LEGENDARY.colourHex}>[Spider Claws Token]"),
                     Formatting.allTags.deserialize("<!i>")
                 )
-                contains("Limited Sea Monsters Crate (2025)") -> listOf(
+                contains("Sea Monsters Cosmetic Crate (2025)") -> listOf(
                     Formatting.allTags.deserialize("<!i>"),
-                    Formatting.allTags.deserialize("<!i><aqua>A crate containing a random limited"),
-                    Formatting.allTags.deserialize("<!i><aqua>cosmetic from the <white>2025 Sea Monsters"),
-                    Formatting.allTags.deserialize("<!i><white>Event Machine<aqua>."),
+                    Formatting.allTags.deserialize("<!i><aqua>A crate containing a random limited or"),
+                    Formatting.allTags.deserialize("<!i><aqua>premium cosmetic from the <white>2025"),
+                    Formatting.allTags.deserialize("<!i><white>Sea Monsters Event Machine<aqua>."),
                     Formatting.allTags.deserialize("<!i>")
                 )
-                contains("Limited Halloween Crate (2025)") -> listOf(
+                contains("Halloween Cosmetic Crate (2025)") -> listOf(
                     Formatting.allTags.deserialize("<!i>"),
-                    Formatting.allTags.deserialize("<!i><aqua>A crate containing a random limited"),
-                    Formatting.allTags.deserialize("<!i><aqua>cosmetic from the <white>2025 Halloween"),
-                    Formatting.allTags.deserialize("<!i><white>Event Machine<aqua>."),
+                    Formatting.allTags.deserialize("<!i><aqua>A crate containing a random limited or"),
+                    Formatting.allTags.deserialize("<!i><aqua>premium cosmetic from the <white>2025"),
+                    Formatting.allTags.deserialize("<!i><white>Halloween Event Machine<aqua>."),
                     Formatting.allTags.deserialize("<!i>")
                 )
                 contains("Elimination Effect") -> listOf(
@@ -295,13 +314,32 @@ object IslandAPI {
                     Formatting.allTags.deserialize("<!i><aqua>craft them into a <white>Weapon Crate<aqua>."),
                     Formatting.allTags.deserialize("<!i>")
                 )
+                contains("Winter Cosmetic Crate (2025*)") -> listOf(
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><aqua>A crate containing a random limited or"),
+                    Formatting.allTags.deserialize("<!i><aqua>premium cosmetic from the <white>2025* Winter"),
+                    Formatting.allTags.deserialize("<!i><white>Event Machine<aqua>."),
+                    Formatting.allTags.deserialize("<!i>")
+                )
+                contains("Cyber Surge Limited Cosmetic Crate") -> listOf(
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><aqua>A crate containing a random limited"),
+                    Formatting.allTags.deserialize("<!i><aqua>cosmetic from <white>Season 5: Cyber Surge<aqua>."),
+                    Formatting.allTags.deserialize("<!i>")
+                )
+                contains("Collector Cosmetic Core") -> listOf(
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><gray>A fragment of a Collector Cosmetic."),
+                    Formatting.allTags.deserialize("<!i>"),
+                    Formatting.allTags.deserialize("<!i><aqua>Bring to the <white>Grand Collector<aqua> to craft"),
+                    Formatting.allTags.deserialize("<!i><aqua>them into your choice of <white>Collector"),
+                    Formatting.allTags.deserialize("<!i><white>Cosmetic<aqua>."),
+                    Formatting.allTags.deserialize("<!i>")
+                )
                 else -> listOf(
                     Formatting.allTags.deserialize("<!i>"),
                     Formatting.allTags.deserialize("<!i><red><b>Description unknown."),
                     Formatting.allTags.deserialize("<!i><red>Contact an admin if you see this."),
-                    Formatting.allTags.deserialize("<!i>"),
-                    Formatting.allTags.deserialize("<!i><red><prefix:warning>This item may be a Weapon Skin"),
-                    Formatting.allTags.deserialize("<!i><red>with a tier, which requires an API fix."),
                     Formatting.allTags.deserialize("<!i>")
                 )
             }

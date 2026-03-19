@@ -29,6 +29,12 @@ query ActiveIslandExchangeListings {
                     isBonusTrophies
                     globalNumberOwned
                 }
+                weaponSkinData {
+                    tier
+                    kills
+                    chromaSet
+                    eliminationEffect
+                }
             }
         }
     }

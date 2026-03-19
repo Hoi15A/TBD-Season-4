@@ -15,3 +15,10 @@ fun String.startsWithVowel(): Boolean {
         return false
     }
 }
+
+/**
+ * Strips the token suffix for Island Exchange usage,
+ * as well as any appended stars which represent
+ * weapon skin tiers
+ */
+fun String.stripTokenSuffix(): String = replace(Regex(" Token( ★+)?\\s*$"), "")
