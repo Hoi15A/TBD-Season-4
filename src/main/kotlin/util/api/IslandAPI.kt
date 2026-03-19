@@ -52,7 +52,7 @@ object IslandAPI {
                 meta.setMaxStackSize(64)
                 meta.displayName(Formatting.allTags.deserialize("<!i><${rarity.colourHex}>${cosmetic.name} Token ${if(tier != null && tier > 0) "★".repeat(tier) else ""}"))
                 meta.lore(listOfNotNull(
-                    Formatting.allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}"),
+                    Formatting.allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}${cosmetic.type.rawValue}"),
                     Formatting.allTags.deserialize("<!i>"),
 
                     if(weaponSkinData != null) Formatting.allTags.deserialize("<!i><aqua>Chroma Set: <white>${chromaSet?.removeSuffix(" Chroma Set") ?: "None"}") else null,
