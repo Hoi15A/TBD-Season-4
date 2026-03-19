@@ -29,6 +29,7 @@ object IslandAPI {
         .addHttpInterceptor(IslandAPIKeyInterceptor(APIKeys.getIslandAPIKey()))
         .build()
 
+    //TODO: COSMETIC TYPE GLYPHS
     fun getListings(): List<Listings> = runBlocking {
         val listings = mutableListOf<Listings>()
         val response = apolloClient.query(ActiveIslandExchangeListingsQuery()).execute()
