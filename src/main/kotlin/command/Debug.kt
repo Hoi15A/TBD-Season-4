@@ -121,12 +121,13 @@ class Debug {
         for (filter in MemoryFilter.entries) {
             val path = "memories.${filter.memoryFilterConfigKey}"
             val rawList = oldConfig.getList(path) ?: continue
-            val existing = Memory.getMemories(filter)
+            val seen = Memory.getMemories(filter).toMutableList()
             rawList.mapNotNull { it as? ItemStack }.forEach { item ->
-                if (existing.contains(item)) {
+                if (seen.contains(item)) {
                     skipped++
                 } else {
                     Memory.saveMemory(item, filter)
+                    seen.add(item)
                     migrated++
                 }
             }
