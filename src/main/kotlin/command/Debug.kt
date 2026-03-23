@@ -1,6 +1,7 @@
 package command
 
 import chat.Formatting
+import config.Memory
 import fishing.FishRarity
 import fishing.Fishing
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -12,6 +13,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -24,6 +26,7 @@ import org.incendo.cloud.annotations.processing.CommandContainer
 import plugin
 import util.Keys
 import util.isHoldingItemInMainHand
+import util.ui.MemoryFilter
 import java.io.File
 
 @Suppress("unused", "unstableApiUsage")
@@ -102,5 +105,32 @@ class Debug {
             it.set(Keys.MEMENTO_TYPE, PersistentDataType.STRING, value)
         }
         player.sendMessage(Formatting.allTags.deserialize("<green>Memento data migrated successfully!</green>"))
+    }
+
+    @Command("debug migrateMemories")
+    @Permission("tbd.command.debug")
+    fun migrateMemories(css: CommandSourceStack) {
+        val configFile = File(plugin.dataFolder, "config.yml")
+        if (!configFile.exists()) {
+            css.sender.sendMessage(Component.text("config.yml not found, nothing to migrate."))
+            return
+        }
+        val oldConfig = YamlConfiguration.loadConfiguration(configFile)
+        var migrated = 0
+        var skipped = 0
+        for (filter in MemoryFilter.entries) {
+            val path = "memories.${filter.memoryFilterConfigKey}"
+            val rawList = oldConfig.getList(path) ?: continue
+            val existing = Memory.getMemories(filter)
+            rawList.mapNotNull { it as? ItemStack }.forEach { item ->
+                if (existing.contains(item)) {
+                    skipped++
+                } else {
+                    Memory.saveMemory(item, filter)
+                    migrated++
+                }
+            }
+        }
+        css.sender.sendMessage(Component.text("Memory migration complete: $migrated migrated, $skipped already existed."))
     }
 }

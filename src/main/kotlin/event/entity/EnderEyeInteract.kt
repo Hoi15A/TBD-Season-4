@@ -28,6 +28,7 @@ import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import util.Keys
+import config.Memory
 import util.ui.MemoryFilter
 
 class EnderEyeInteract: Listener {

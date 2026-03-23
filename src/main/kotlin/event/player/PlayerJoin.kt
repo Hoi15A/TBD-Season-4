@@ -1,8 +1,8 @@
 package event.player
 
-import Config
-import Link
-import ResourcePack
+import config.Config
+import config.Link
+import config.ResourcePack
 import chat.Formatting
 import command.LiveUtil
 import logger

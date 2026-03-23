@@ -1,6 +1,6 @@
 package command
 
-import Memory
+import config.Memory
 import chat.Formatting
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Material

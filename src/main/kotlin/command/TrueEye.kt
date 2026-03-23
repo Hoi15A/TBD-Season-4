@@ -20,6 +20,7 @@ import org.incendo.cloud.annotation.specifier.Greedy
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
+import config.Memory
 import plugin
 import util.Keys.TRUE_EYE
 import util.secondsToTicks

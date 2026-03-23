@@ -9,6 +9,7 @@ import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import config.Memory
 import plugin
 import util.Sounds.FISHING_SOCIAL
 import util.timeRemainingFormatted
