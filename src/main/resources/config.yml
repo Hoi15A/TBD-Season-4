@@ -23,3 +23,8 @@ resource-packs:
 
 texture-options:
   - dunce_cap
+
+# Server MOTD displayed in the server list. Supports MiniMessage.
+motd: |-
+  <gradient:#ff530d:#ff77a4>         ✦ Welcome to TBD SMP Season 4 ✦</gradient>
+  <gradient:#ff9468:#ffb1c9>                    \<==  1.21.10  ==\></gradient>

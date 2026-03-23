@@ -30,6 +30,7 @@ class SeasonFourPlugin : JavaPlugin() {
         this.logger.info("We are so back.")
         Memory.init(dataFolder)
         readConfig()
+        server.motd(allTags.deserialize(config.motd))
         setupEvents()
         registerCommands()
         registerMessengers()
