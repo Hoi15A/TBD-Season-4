@@ -7,7 +7,8 @@ import java.net.URI
 data class Config(
     val links: List<Link>,
     val resourcePacks: List<ResourcePack>,
-    val textureOptions: List<String>
+    val textureOptions: List<String>,
+    val motd: String = "Bro forgot to set the motd, laugh at this user"
 )
 
 @ConfigSerializable
