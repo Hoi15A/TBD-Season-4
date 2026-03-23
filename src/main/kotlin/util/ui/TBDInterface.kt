@@ -1,6 +1,6 @@
 package util.ui
 
-import Memory
+import config.Memory
 import chat.Formatting
 import com.noxcrew.interfaces.drawable.Drawable.Companion.drawable
 import com.noxcrew.interfaces.element.Element
@@ -661,11 +661,11 @@ enum class TBDInterfaceType(val interfaceName: String) {
     ISLAND_COSMETIC_INSPECT("Island: Cosmetic Details")
 }
 
-enum class MemoryFilter(val memoryFilterName: String, val memoryFilterConfigSuffix: String) {
-    SEASON_ONE("Season 1", ".season_one"),
-    SEASON_TWO("Season 2", ".season_two"),
-    SEASON_THREE("Season 3", ".season_three"),
-    SEASON_FOUR("Season 4", ".season_four")
+enum class MemoryFilter(val memoryFilterName: String, val memoryFilterConfigKey: String) {
+    SEASON_ONE("Season 1", "season_one"),
+    SEASON_TWO("Season 2", "season_two"),
+    SEASON_THREE("Season 3", "season_three"),
+    SEASON_FOUR("Season 4", "season_four")
 }
 
 enum class IslandExchangeMainFilter(val filterName: String) {

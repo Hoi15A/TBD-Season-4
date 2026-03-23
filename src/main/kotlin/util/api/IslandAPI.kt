@@ -1,6 +1,6 @@
 package util.api
 
-import APIKeys
+import config.APIKeys
 import chat.Formatting
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.http.HttpRequest

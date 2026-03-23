@@ -1,3 +1,5 @@
+import config.Config
+import config.Memory
 import chat.Formatting.allTags
 import chat.VisualChat
 import com.noxcrew.interfaces.InterfacesListeners
@@ -26,6 +28,7 @@ class SeasonFourPlugin : JavaPlugin() {
 
     override fun onEnable() {
         this.logger.info("We are so back.")
+        Memory.init(dataFolder)
         readConfig()
         setupEvents()
         registerCommands()
