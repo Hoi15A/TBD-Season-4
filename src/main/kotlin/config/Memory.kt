@@ -14,7 +14,9 @@ object Memory {
     fun init(dataFolder: File) {
         val memoriesFile = File(dataFolder, "memories.yml")
         if (!memoriesFile.exists()) {
-            plugin.getResource("memories.yml")!!.use { it.copyTo(memoriesFile.outputStream()) }
+            plugin.getResource("memories.yml")!!.use { input ->
+                memoriesFile.outputStream().use { input.copyTo(it) }
+            }
         }
         loader = YamlConfigurationLoader.builder()
             .file(memoriesFile)
