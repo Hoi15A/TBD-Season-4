@@ -10,7 +10,16 @@ import java.util.Base64
 object ItemStackSerializer : TypeSerializer<ItemStack> {
     override fun deserialize(type: Type, node: ConfigurationNode): ItemStack {
         val encoded = node.string ?: throw SerializationException(type, "Expected Base64 string for ItemStack")
-        return ItemStack.deserializeBytes(Base64.getDecoder().decode(encoded))
+        return try {
+            val bytes = Base64.getDecoder().decode(encoded)
+            ItemStack.deserializeBytes(bytes)
+        } catch (e: IllegalArgumentException) {
+            throw SerializationException(
+                type,
+                "Failed to decode Base64 ItemStack from node at path ${node.path()} with value '$encoded'",
+                e
+            )
+        }
     }
 
     override fun serialize(type: Type, obj: ItemStack?, node: ConfigurationNode) {
