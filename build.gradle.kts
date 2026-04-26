@@ -72,7 +72,7 @@ dependencies {
 
     implementation("com.noxcrew.interfaces:interfaces:2.0.1-SNAPSHOT")
 
-    implementation("com.apollographql.apollo3:apollo-runtime:4.0.0-beta.7")
+    implementation("com.apollographql.apollo:apollo-runtime:4.4.3")
 }
 
 apollo {
