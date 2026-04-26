@@ -17,7 +17,7 @@ plugins {
     kotlin("jvm") version "2.3.0-RC3"
     kotlin("kapt") version "2.3.0-RC3"
     id("com.gradleup.shadow") version "9.3.0"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
     id("xyz.jpenilla.run-paper") version "3.0.2" // Adds runServer and runMojangMappedServer tasks for testing
     id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.3.0" // Generates plugin.yml based on the Gradle config
     id("com.apollographql.apollo3") version "4.0.0-beta.7" // GraphQL
@@ -36,11 +36,11 @@ bukkitPluginYaml {
         "derNiklaas",
         "Sebiann"
     )
-    apiVersion = "1.21.11"
+    apiVersion = "26.1.2"
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
     compilerOptions {
         javaParameters = true
     }
@@ -59,9 +59,9 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("26.1.2.build.48-beta")
 
-    implementation("org.incendo:cloud-paper:2.0.0-beta.13")
+    implementation("org.incendo:cloud-paper:2.0.0-beta.15")
     implementation("org.incendo:cloud-annotations:2.0.0")
     implementation("org.incendo:cloud-kotlin-extensions:2.0.0")
     kapt("org.incendo:cloud-annotations:2.0.0")
@@ -72,7 +72,7 @@ dependencies {
 
     implementation("com.noxcrew.interfaces:interfaces:2.0.1-SNAPSHOT")
 
-    implementation("com.apollographql.apollo3:apollo-runtime:4.0.0-beta.7")
+    implementation("com.apollographql.apollo:apollo-runtime:4.4.3")
 }
 
 apollo {
@@ -85,7 +85,7 @@ apollo {
 
 tasks {
     compileJava {
-        options.release = 21
+        options.release = 25
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything

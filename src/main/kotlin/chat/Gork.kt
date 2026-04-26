@@ -60,7 +60,9 @@ object Gork {
         "ok garmin",
         "uwu <player>",
         "How should I know",
-        "bribe me later"
+        "bribe me later",
+        "skill issue <player>",
+        "ask again on a Tuesday"
     )
 
     fun handleChatEvent(e: AsyncChatEvent) {
